@@ -1,0 +1,6 @@
+.venv
+venv
+jwt-signing.pem
+jwt-signing.pub
+__pycache__
+db.sqlite3
