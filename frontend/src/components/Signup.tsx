@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import type { Dispatch, SetStateAction } from "react";
+
+interface Props {
+  setSession: Dispatch<SetStateAction<boolean>>;
+}
 
 const API_URL = import.meta.env.VITE_API_URL;
-function Signup() {
+function Signup({ setSession: _setSession }: Props) {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -76,9 +81,11 @@ function Signup() {
               <a href="/login" className="text-[#8aaa62] hover:underline">
                 Log in
               </a>
+              {error && (
+                <p className="text-red-500 text-sm mx-auto p-4">{error}</p>
+              )}
             </p>
           </div>
-          {error && <p className="text-red-500 text-lg mx-auto p-4">{error}</p>}
         </div>
       </div>
     </form>
