@@ -8,7 +8,7 @@ import Dashboard from "./components/Dashboard";
 import Pricing from "./components/Pricing";
 import DashbNavbar from "./components/DashbNavbar";
 import Items from "./components/Items";
-import AddItem from "./components/Additem";
+import AddItem from "./components/AddItem";
 import Stores from "./components/Stores";
 import Trips from "./components/Trips";
 
@@ -19,7 +19,7 @@ function App() {
   // keep session in sync when token changes
   useEffect(() => {
     const checkSession = () => {
-      setSession(!!localStorage.getItem("token"));
+      setSession(!localStorage.getItem("token"));
     };
 
     // check once on mount

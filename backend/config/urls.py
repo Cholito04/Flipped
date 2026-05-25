@@ -18,10 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from .api import api
 from ninja_simple_jwt.auth.views.api import mobile_auth_router, web_auth_router
+from inventory.api import router as inventory_router
 
 api.add_router("/auth/mobile/", mobile_auth_router)
 api.add_router("/auth/web/", web_auth_router)
-api.add_router("/inventory/", "inventory.api.router")
+api.add_router("/inventory/", inventory_router)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

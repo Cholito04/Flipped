@@ -39,7 +39,9 @@ function Navbar() {
 
   return (
     <div className="fixed w-full bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50">
-      <h1 className="w-full text-3xl font-bold text-[#7E8C54]">FLIPPED.</h1>
+      <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-4">
+        FLIPPED.
+      </Link>
       <ul className="hidden md:flex items-center gap-1">
         <li>
           <button
@@ -82,9 +84,9 @@ function Navbar() {
             : "fixed -left-full z-50"
         }
       >
-        <h1 className="w-full text-3xl font-bold text-[#7E8C54] m-4">
+        <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-5">
           FLIPPED.
-        </h1>
+        </Link>
 
         <ul onClick={handleNav} className="uppercase p-4 ">
           <li>

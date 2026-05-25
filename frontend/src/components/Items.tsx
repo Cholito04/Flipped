@@ -3,43 +3,33 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "../styles/cs.module.css";
+import api from "../util/axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
 interface Items {
+  id: string;
   name: string;
-  desciption: string;
   price_bought: string;
   price_sold: string;
-  listed: string;
-  sold_on: string;
-  listed_for: string;
+  store: string | null;
+  created_at: string;
 }
 
 function Items() {
   const [error, setError] = useState<string | null>(null);
   const [items, setitems] = useState<Items[]>([]);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const playlist_id = location.state?.playlist_id;
 
   useEffect(() => {
-    if (!playlist_id) {
-      setError("No items found want to add items?.");
-      navigate("/additems");
-      return;
-    }
-
     async function fetchitems() {
       try {
-        const { data } = await axios.get(`${API_URL}/users/${items}`);
-        setitems(data.items);
+        const { data } = await api.get("/inventory/items");
+
+        setitems(data);
       } catch (err: any) {
         if (err.response?.status === 404) {
-          setError("Items not found");
+          setError("Please login again");
         } else {
-          setError("Failed to load recommendations");
+          setError("Failed to load items");
         }
         console.error(err);
       } finally {
@@ -48,7 +38,7 @@ function Items() {
     }
 
     fetchitems();
-  }, [playlist_id, navigate]);
+  }, []);
 
   if (loading) {
     return (
@@ -77,14 +67,9 @@ function Items() {
                 >
                   <h2 className="text-2xl font-bold text-white">{item.name}</h2>
 
-                  <p className="text-gray-300 mt-2">{item.desciption}</p>
-
                   <div className="mt-4 text-gray-200">
                     <p>Price Bought: ${item.price_bought}</p>
                     <p>Price Sold: ${item.price_sold}</p>
-                    <p>Listed: {item.listed}</p>
-                    <p>Sold On: {item.sold_on}</p>
-                    <p>Listed For: {item.listed_for}</p>
                   </div>
                 </div>
               ))}

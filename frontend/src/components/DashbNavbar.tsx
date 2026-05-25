@@ -8,14 +8,21 @@ interface Props {
 }
 function DashbNavbar({ setSession: _setSession }: Props) {
   const [nav, setNav] = useState(true);
+  const [logout, setLog] = useState(localStorage.removeItem("access"));
 
   const handleNav = () => {
     setNav(!nav);
   };
 
+  const handleLog = () => {
+    setLog(logout);
+  };
+
   return (
     <div className="fixed w-full bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50 bg-gray-800">
-      <h1 className="w-full text-3xl font-bold text-[#7E8C54]">FLIPPED.</h1>
+      <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-4">
+        FLIPPED.
+      </Link>
       <ul className="hidden md:flex items-center gap-1">
         <li>
           <Link
@@ -51,6 +58,14 @@ function DashbNavbar({ setSession: _setSession }: Props) {
             addItems
           </Link>
         </li>
+        <li>
+          <button
+            onClick={handleLog}
+            className="p-4 hover:text-[#7E8C54] cursor-pointer"
+          >
+            logout
+          </button>
+        </li>
       </ul>
       <div onClick={handleNav} className="block md:hidden">
         {!nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
@@ -63,9 +78,12 @@ function DashbNavbar({ setSession: _setSession }: Props) {
             : "fixed -left-full z-50"
         }
       >
-        <h1 className="w-full text-3xl font-bold text-[#7E8C54] m-4">
-          FLIPPED.
-        </h1>
+        <div className="mt-8">
+          {" "}
+          <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-5">
+            FLIPPED.
+          </Link>
+        </div>
 
         <ul onClick={handleNav} className="uppercase p-4 ">
           <li>
