@@ -6,18 +6,17 @@ import type { Dispatch, SetStateAction } from "react";
 interface Props {
   setSession: Dispatch<SetStateAction<boolean>>;
 }
-function DashbNavbar({ setSession: _setSession }: Props) {
+function DashbNavbar({ setSession }: Props) {
   const [nav, setNav] = useState(true);
-  const [logout, setLog] = useState(localStorage.removeItem("access"));
 
   const handleNav = () => {
     setNav(!nav);
   };
 
   const handleLog = () => {
-    setLog(logout);
+    localStorage.removeItem("access");
+    setSession(false);
   };
-
   return (
     <div className="fixed w-full bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50 bg-gray-800">
       <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-4">

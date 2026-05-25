@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "../styles/cs.module.css";
 import api from "../util/axios";
@@ -23,7 +21,7 @@ function Items() {
     async function fetchitems() {
       try {
         const { data } = await api.get("/inventory/items");
-
+        console.log(data);
         setitems(data);
       } catch (err: any) {
         if (err.response?.status === 404) {
@@ -59,7 +57,7 @@ function Items() {
         {error && <p className="text-red-400 text-center text-xl">{error}</p>}
         <div>
           {items.length > 0 && (
-            <div>
+            <div className="mt-10">
               {items.map((item, index) => (
                 <div
                   key={index}

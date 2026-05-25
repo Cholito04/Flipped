@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import type { Dispatch, SetStateAction } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 interface Props {
   setSession: Dispatch<SetStateAction<boolean>>;
 }
-function Login({ setSession: _setSession }: Props) {
+function Login({ setSession }: Props) {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -38,7 +38,7 @@ function Login({ setSession: _setSession }: Props) {
         console.log(decoded);
         localStorage.setItem("access", decoded.sub);
       }
-
+      setSession(true); 
       navigate("/dashboard");
     } catch (err: any) {
       setError("Username or password doesn't exist(case senseitive)");

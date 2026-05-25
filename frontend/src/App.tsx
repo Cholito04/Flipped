@@ -14,12 +14,12 @@ import Trips from "./components/Trips";
 
 function App() {
   const [session, setSession] = useState(() => {
-    return localStorage.getItem("token") ? true : false;
+    return !!localStorage.getItem("token") ? true : false;
   });
   // keep session in sync when token changes
   useEffect(() => {
     const checkSession = () => {
-      setSession(!localStorage.getItem("token"));
+      setSession(!!localStorage.getItem("token"));
     };
 
     // check once on mount
