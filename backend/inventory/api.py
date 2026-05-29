@@ -7,7 +7,7 @@ from typing import List
 router = Router(auth=HttpJwtAuth(), tags=["inventory"])
 
 
-@router.post("/", summary="Create Item",
+@router.post("/create-item", summary="Create Item",
              description="Creates a new item in a user's inventory")
 def create_item(request, payload: schemas.ItemIn):
     item = models.Item.objects.create(user_id=int(request.user.id),
