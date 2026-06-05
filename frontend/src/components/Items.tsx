@@ -3,12 +3,26 @@ import { Link } from "react-router-dom";
 import styles from "../styles/cs.module.css";
 import api from "../util/axios";
 
-interface Items {
-  id: string;
+interface Brand {
+  id: number;
+  brand: string;
+}
+
+interface Style {
+  id: number;
+  style: string;
+}
+
+interface Item {
+  id: number;
   name: string;
+  brand: Brand;
+  style: Style;
+  size: string;
+  category: string;
+  status: string;
   price_bought: string;
-  price_sold: string;
-  store: string | null;
+  price_sold: string | null;
   created_at: string;
 }
 
@@ -76,6 +90,23 @@ function Items() {
                       {item.name}
                     </h2>
                   </div>
+                  <div className="text-center">
+                    <p className="text-[#5a6e4a] text-xs">Bought</p>
+                    <p className="font-semibold text-[#d4e8b0]">
+                      {item.brand.brand}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[#5a6e4a] text-xs">Bought</p>
+                    <p className="font-semibold text-[#d4e8b0]">
+                      {item.style.style}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[#5a6e4a] text-xs">Bought</p>
+                    <p className="font-semibold text-[#d4e8b0]">{item.size}</p>
+                  </div>
+
                   <div className="text-center">
                     <p className="text-[#5a6e4a] text-xs">Bought</p>
                     <p className="font-semibold text-[#d4e8b0]">
