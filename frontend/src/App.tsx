@@ -58,7 +58,7 @@ function App() {
           <Route path="/items" element={<Items />} />
           <Route path="/additem" element={<AddItem />} />
           <Route path="/stores" element={<Stores />} />
-          <Route path="/trips" element={<Trips />} />
+          <Route path="/trips" element={<Trips />} />{" "}
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import type { Dispatch, SetStateAction } from "react";
@@ -12,14 +13,19 @@ function DashbNavbar({ setSession }: Props) {
   const handleNav = () => {
     setNav(!nav);
   };
+  const navigate = useNavigate();
 
   const handleLog = () => {
     localStorage.removeItem("access");
     setSession(false);
+    navigate("/");
   };
   return (
-    <div className="fixed w-full bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50 bg-gray-800">
-      <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-4">
+    <div className="fixed w-full bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50">
+      <Link
+        to="/dashboard"
+        className="w-full text-3xl font-bold text-[#7E8C54] m-4"
+      >
         FLIPPED.
       </Link>
       <ul className="hidden md:flex items-center gap-1">
@@ -79,7 +85,10 @@ function DashbNavbar({ setSession }: Props) {
       >
         <div className="mt-8">
           {" "}
-          <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-5">
+          <Link
+            to="/dashboard"
+            className="w-full text-3xl font-bold text-[#7E8C54] m-5"
+          >
             FLIPPED.
           </Link>
         </div>
@@ -124,6 +133,14 @@ function DashbNavbar({ setSession }: Props) {
             >
               addItems
             </Link>
+          </li>
+          <li>
+            <button
+              onClick={handleLog}
+              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer w-full"
+            >
+              logout
+            </button>
           </li>
         </ul>
       </div>

@@ -6,7 +6,6 @@ function Hero() {
     <div className="w-full min-h-screen">
       <div className="mx-auto text-center p-20">
         <div className={`${styles.glow}`}> </div>
-
         {/* text sits on top */}
         <h1
           className={`lg:text-9xl text-8xl font-extrabold mt-40 relative z-1 ${styles.chrome}`}
@@ -15,10 +14,10 @@ function Hero() {
         </h1>
         <p className={`text-xl text-white relative z-1`}>
           app for resellers to track their profit
-        </p>
-        {' '}
+        </p>{" "}
         <p className={`text-xl text-white relative z-1 mt-10`}>
-          This website was created to help keep track of money spent vs money earn and using sell data to predict which items sell best.
+          This website was created to help keep track of money spent vs money
+          earn and using sell data to predict which items sell best.
         </p>
       </div>
       <div className="flex justify-center gap-4">
