@@ -24,20 +24,21 @@ function Signup({ setSession: _setSession }: Props) {
     if (!username) return;
 
     try {
-      const { data } = await axios.post(`${API_URL}/createuser`, {
+      await axios.post(`${API_URL}/auth/register`, {
         username,
         email,
         password,
       });
+      const { data } = await axios.post(`${API_URL}/auth/web/sign-in`, {
+        username,
+        password,
+      });
 
-      console.log("User created:", data);
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("email", data.email);
-      localStorage.setItem("password", data.password);
+      localStorage.setItem("token", data.access);
       navigate("/dashboard", { state: { username: data.username } });
     } catch (err: any) {
       if (err.response?.status === 400) {
-        setError("Username already exists");
+        setError(err.response?.data.error);
       } else {
         setError("Network error. Please check your connection.");
       }
