@@ -42,3 +42,9 @@ class StyleIn(Schema):
 class StyleOut(Schema):
     id: int
     style: str
+
+
+class StatsOut(Schema):
+    total_invested: float
+    total_revenue: float
+    total_profit: float

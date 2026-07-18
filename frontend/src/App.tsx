@@ -53,7 +53,19 @@ function App() {
           />
           <Route path="/login" element={<Login setSession={setSession} />} />
           <Route path="/signup" element={<Signup setSession={setSession} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/dashboard"
+            element={
+              <div>
+                <div id="stats">
+                  <Dashboard />
+                </div>
+                <div id="items">
+                  <Items />
+                </div>
+              </div>
+            }
+          />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/items" element={<Items />} />
           <Route path="/additem" element={<AddItem />} />

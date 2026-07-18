@@ -4,6 +4,7 @@ from ninja_simple_jwt.auth.ninja_auth import HttpJwtAuth
 from django.shortcuts import get_object_or_404
 from typing import List
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 
 router = Router(auth=HttpJwtAuth(), tags=["inventory"])
 User = get_user_model()
@@ -95,3 +96,25 @@ def create_style(request, payload: schemas.StyleIn):
 @router.get("/styles", response=List[schemas.StyleOut])
 def list_styles(request):
     return models.Style.objects.filter(user_id=request.user.id)
+
+
+@router.get("/stats", response=schemas.StatsOut)
+def inventory_stats(request):
+
+    items = models.Item.objects.filter(user_id=request.user.id)
+
+    total_invested = (
+        items.aggregate(total=Sum("price_bought"))["total"] or 0
+    )
+
+    total_revenue = (
+        items.aggregate(total=Sum("price_sold"))["total"] or 0
+    )
+
+    total_profit = total_revenue - total_invested
+
+    return {
+        "total_invested": float(total_invested),
+        "total_revenue": float(total_revenue),
+        "total_profit": float(total_profit),
+    }

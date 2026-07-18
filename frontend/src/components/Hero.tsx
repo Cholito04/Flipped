@@ -3,7 +3,7 @@ import styles from "../styles/cs.module.css";
 
 function Hero() {
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full  mb-50">
       <div className="mx-auto text-center p-20">
         <div className={`${styles.glow}`}> </div>
         {/* text sits on top */}
@@ -23,13 +23,13 @@ function Hero() {
       <div className="flex justify-center gap-4">
         <Link
           to="/login"
-          className="bg-[#2a4a2a] text-[#d4e8b0] border border-[#3d6b3d] px-6 py-3 rounded-xl font-semibold hover:bg-[#3d6b3d] transition-all"
+          className="bg-[#2a4a2a] text-[#d4e8b0] border border-[#3d6b3d] px-6 py-3 rounded-xl font-semibold hover:bg-[#376237] hover:scale-105 transition-all"
         >
           Log In
         </Link>
         <Link
           to="/signup"
-          className="bg-transparent text-[#5a6e4a] border border-[#1e2a1e] px-6 py-3 rounded-xl font-semibold hover:border-[#3d6b3d] hover:text-[#8aaa62] transition-all"
+          className="bg-[#90a490] text-[#2a4a2a] border border-[#454645] px-6 py-3 rounded-xl font-semibold hover:scale-105 hover:bg-[#b0bdb0] transition-all"
         >
           Sign Up
         </Link>

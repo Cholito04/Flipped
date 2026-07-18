@@ -17,37 +17,37 @@ function Pricing() {
         </div>
         <div className="w-full py-10 lg:max-w-310 max-w-130 mx-auto grid lg:grid-cols-2 gap-8">
           {/* Free */}
-          <div className="bg-[#0d120d] border border-[#6a6a6a] text-[#d4e8b0] rounded-2xl p-8 flex flex-col hover:scale-105 duration-300 hover:border-[#a0a0a0]">
+          <div className="bg-[#2a2c2a] border border-[#6a6a6a] text-[#d4e8b0] rounded-2xl p-8 flex flex-col hover:scale-105 duration-300 hover:border-[#a0a0a0]">
             <div className="mb-6">
               <h2 className="text-3xl font-bold text-[#8aaa62] mb-2">Free</h2>
-              <div className="text-5xl font-extrabold text-[#c8cdd8]">$0</div>
+              <div className="text-5xl font-extrabold text-[#a0a0a0]">$0</div>
               <p className="text-[#5a6e4a] text-sm mt-1">forever</p>
             </div>
 
             {/* list of benifits*/}
             <ul className="flex flex-col gap-4 text-left mb-8 flex-1">
-              <li className="border-b border-[#1e2a1e] pb-4 text-sm flex items-center gap-2">
+              <li className="border-b border-[#5a5959] pb-4 text-sm flex items-center gap-2">
                 <span className="text-[#6b8c4a]">✓</span> Up to 50 items
               </li>
-              <li className="border-b border-[#1e2a1e] pb-4 text-sm flex items-center gap-2">
+              <li className="border-b border-[#5a5959] pb-4 text-sm flex items-center gap-2">
                 <span className="text-[#6b8c4a]">✓</span> Basic profit tracking
               </li>
-              <li className="border-b border-[#1e2a1e] pb-4 text-sm flex items-center gap-2">
+              <li className="border-b border-[#5a5959] pb-4 text-sm flex items-center gap-2">
                 <span className="text-[#6b8c4a]">✓</span> Add locations where
                 you thrift
               </li>
-              <li className="pb-4 text-sm flex items-center gap-2">
+              <li className="pb-4 border-b border-[#5a5959] text-sm flex items-center gap-2">
                 <span className="text-[#6b8c4a]">✓</span> Show profit for each
                 sourcing type
               </li>
             </ul>
-            <button className="w-full border border-[#3d6b3d] text-[#8aaa62] py-3 rounded-xl font-semibold hover:bg-[#1e3020] transition-all">
-              Get Started Free
+            <button className="w-full bg-[#8e8f8e] text-[#242724] py-3 rounded-xl font-bold hover:bg-[#bdbdbd] transition-all">
+              Get started free
             </button>
           </div>
           {/* Pro */}
 
-          <div className="bg-[#2a4a2a] border border-[#a0a0a0] text-[#d4e8b0] rounded-2xl p-8 flex flex-col hover:scale-105 duration-300 hover:border-[#ffffff]">
+          <div className="bg-[#1a441a] border border-[#396329] text-[#d4e8b0] rounded-2xl p-8 flex flex-col hover:scale-105 duration-300 hover:border-[#47773f]">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-[#c8dda8] mb-2">Pro</h2>
               <div className="text-5xl font-extrabold text-[#a0a0a0]">

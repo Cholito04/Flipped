@@ -38,7 +38,7 @@ function Navbar() {
   };
 
   return (
-    <div className="fixed w-full bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50">
+    <div className="fixed w-full bg-[#0e0f0d] text-white px-6 py-4 flex items-center h-24 justify-between z-50">
       <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-4">
         FLIPPED.
       </Link>
@@ -81,7 +81,7 @@ function Navbar() {
         className={
           !nav
             ? "fixed left-0 top-0 w-[60%]  h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-400 z-50"
-            : "fixed -left-full z-50"
+            : "fixed -left-full z-50 "
         }
       >
         <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-5">
