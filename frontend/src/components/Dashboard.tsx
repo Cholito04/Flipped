@@ -43,37 +43,37 @@ function Dashboard() {
         )}
         {stats && (
           <div className=" text-[#bbbcb8]  grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-10 ">
-            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-2xl p-6">
+            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
               <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
                 Total Invested
               </p>
-              <p className="text-[#d4e8b0] text-3xl font-black">
+              <p className="text-[#d4e8b0] text-4xl font-black">
                 ${stats.total_invested}
               </p>
             </div>
 
-            <div className="flex flex-col gap-2 text-center bg-[#141c14] border border-[#2e4a2e] rounded-2xl p-6">
+            <div className="flex flex-col gap-2 text-center bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
               <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
                 Total Revenue
               </p>
-              <p className="text-[#d4e8b0] text-3xl font-black">
+              <p className="text-[#d4e8b0] text-4xl font-black">
                 ${stats.total_revenue}
               </p>
             </div>
 
-            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-2xl p-6">
+            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
               <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
                 Items Sold
               </p>
-              <p className="text-[#d4e8b0] text-3xl font-black">—</p>
+              <p className="text-[#d4e8b0] text-4xl font-black">—</p>
             </div>
 
-            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-2xl p-6">
+            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
               <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
                 Net Profit
               </p>
               <p
-                className={`text-3xl font-black ${stats.total_profit >= 0 ? "text-[#8aaa62]" : "text-red-400"}`}
+                className={`text-4xl font-black ${stats.total_profit >= 0 ? "text-[#8aaa62]" : "text-red-400"}`}
               >
                 ${stats.total_profit}
               </p>
