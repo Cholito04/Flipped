@@ -35,6 +35,7 @@ def create_item(request, payload: schemas.ItemIn):
         category=payload.category,
         price_bought=payload.price_bought,
         price_sold=payload.price_sold,
+        status=payload.status,
     )
 
     return item
