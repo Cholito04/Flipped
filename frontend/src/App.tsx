@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
@@ -13,6 +13,7 @@ import Stores from "./components/Stores";
 import Trips from "./components/Trips";
 
 function App() {
+  const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(() => {
     return !!localStorage.getItem("token") ? true : false;
   });
@@ -20,10 +21,12 @@ function App() {
   useEffect(() => {
     const checkSession = () => {
       setSession(!!localStorage.getItem("token"));
+      setLoading(false);
     };
 
     // check once on mount
     checkSession();
+    setSession(false);
 
     // sync between tabs
     window.addEventListener("storage", checkSession);
@@ -33,45 +36,63 @@ function App() {
     };
   }, []);
 
+  if (loading) return null;
+
   return (
     <div>
       <BrowserRouter>
-        {session ? <DashbNavbar setSession={setSession} /> : <Navbar />}
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div>
-                <div id="home">
-                  <Hero />
-                </div>
-                <div id="pricing">
-                  <Pricing />
-                </div>
-              </div>
-            }
-          />
-          <Route path="/login" element={<Login setSession={setSession} />} />
-          <Route path="/signup" element={<Signup setSession={setSession} />} />
-          <Route
-            path="/dashboard"
-            element={
-              <div>
-                <div id="stats">
-                  <Dashboard />
-                </div>
-                <div id="items">
-                  <Items />
-                </div>
-              </div>
-            }
-          />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/items" element={<Items />} />
-          <Route path="/additem" element={<AddItem />} />
-          <Route path="/stores" element={<Stores />} />
-          <Route path="/trips" element={<Trips />} />{" "}
-        </Routes>
+        {session ? (
+          // authenticated app
+          <>
+            <DashbNavbar setSession={setSession} />
+            <Routes>
+              <Route
+                path="/dashboard"
+                element={
+                  <div>
+                    <div id="stats">
+                      <Dashboard />
+                    </div>
+                    <div id="items">
+                      <Items />
+                    </div>
+                  </div>
+                }
+              />
+              <Route path="/items" element={<Items />} />
+              <Route path="/additem" element={<AddItem />} />
+              <Route path="/stores" element={<Stores />} />
+              <Route path="/trips" element={<Trips />} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </Routes>
+          </>
+        ) : (
+          // public site
+          <>
+            <Navbar />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Hero />
+                    <Pricing />
+                  </>
+                }
+              />
+              <Route
+                path="/login"
+                element={<Login setSession={setSession} />}
+              />
+              <Route
+                path="/signup"
+                element={<Signup setSession={setSession} />}
+              />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </>
+        )}
       </BrowserRouter>
     </div>
   );

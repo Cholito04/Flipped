@@ -6,8 +6,10 @@ interface stats {
   total_invested: number;
   total_revenue: number;
   total_profit: number;
+  items_sold: number;
+  sell_through_rate: number;
+  avg_sell_days: number | null;
 }
-
 function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<stats | null>(null);
@@ -65,7 +67,9 @@ function Dashboard() {
               <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
                 Items Sold
               </p>
-              <p className="text-[#d4e8b0] text-4xl font-black">—</p>
+              <p className="text-[#d4e8b0] text-4xl font-black">
+                {stats.items_sold}
+              </p>
             </div>
 
             <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
@@ -76,6 +80,22 @@ function Dashboard() {
                 className={`text-4xl font-black ${stats.total_profit >= 0 ? "text-[#8aaa62]" : "text-red-400"}`}
               >
                 ${stats.total_profit}
+              </p>
+            </div>
+            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
+              <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
+                Sell rate
+              </p>
+              <p className="text-[#d4e8b0] text-4xl font-black">
+                {stats.sell_through_rate}%
+              </p>
+            </div>
+            <div className="flex flex-col text-center gap-2 bg-[#141c14] border border-[#2e4a2e] rounded-4xl p-6">
+              <p className="text-[#8aaa62] text-m font-semibold uppercase tracking-widest">
+                Avg sell date
+              </p>
+              <p className="text-[#d4e8b0] text-4xl font-black">
+                {stats.avg_sell_days !== null ? `${stats.avg_sell_days}d` : "—"}
               </p>
             </div>
           </div>

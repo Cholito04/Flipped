@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import styles from "../styles/cs.module.css";
+import style from "../styles/cs.module.css";
 import api from "../util/axios";
 import ItemMenu from "./ItemMenu";
+import EditItemModel from "../util/EditItemModel";
 
 interface Brand {
   id: number;
@@ -16,7 +17,6 @@ interface Style {
 
 interface Item {
   id: number;
-  name: string;
   brand: Brand;
   style: Style;
   size: string;
@@ -25,12 +25,67 @@ interface Item {
   price_bought: string;
   price_sold: string | null;
   created_at: string;
+  sell_time_days: number | null;
 }
 
 function Items() {
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+
+  async function handleMarkSold(id: number) {
+    try {
+      const { data } = await api.patch(`/inventory/items/${id}`, {
+        status: "sold",
+      });
+      setItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, ...data } : item)),
+      );
+    } catch {
+      setError("Failed to update item");
+    }
+  }
+
+  // add state
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [styles, setStyles] = useState<Style[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [itemsRes, brandsRes, stylesRes] = await Promise.all([
+          api.get("/inventory/items"),
+          api.get("/inventory/brands"),
+          api.get("/inventory/styles"),
+        ]);
+        setItems(itemsRes.data);
+        setBrands(brandsRes.data);
+        setStyles(stylesRes.data);
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          setError("Please login again");
+        } else {
+          setError("Failed to load items");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+  function handleSave(updated: any) {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === updated.id ? { ...item, ...updated } : item,
+      ),
+    );
+  }
+
+  function handleEdit(id: number) {
+    const item = items.find((i) => i.id === id) || null;
+    setEditingItem(item);
+  }
 
   async function handleDelete(id: number) {
     try {
@@ -72,7 +127,7 @@ function Items() {
     <div className="w-full min-h-screen px-6">
       <div className="max-w-500 mx-auto pt-20">
         <h1
-          className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${styles.chrome}`}
+          className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${style.chrome}`}
         >
           {" "}
           Items
@@ -94,11 +149,6 @@ function Items() {
                   key={item.id}
                   className="bg-[#162416] p-5 mx-auto mt-5 rounded-2xl border border-[#395339] flex justify-between items-center"
                 >
-                  <div className="flex flex-col">
-                    <h2 className="text-xl font-bold text-[#d4e8b0]">
-                      {item.name}
-                    </h2>
-                  </div>
                   <div className="text-center">
                     <p className="text-[#5a6e4a] text-xs">Brand</p>
                     <p className="font-semibold text-[#d4e8b0]">
@@ -129,6 +179,7 @@ function Items() {
                       {item.price_sold ? `$${item.price_sold}` : "—"}
                     </p>
                   </div>
+
                   <div className="text-right">
                     <p className="text-xs text-[#5a6e4a]">Status</p>
 
@@ -144,7 +195,23 @@ function Items() {
                       {item.status}
                     </p>
                   </div>
-                  <ItemMenu itemId={item.id} onDelete={handleDelete} />
+                  <div>
+                    {item.status === "sold" && item.sell_time_days !== null && (
+                      <div className="text-center">
+                        <p className="text-[#5a6e4a] text-xs">Sold In</p>
+                        <p className="font-semibold text-[#8aaa62]">
+                          {item.sell_time_days}d
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <ItemMenu
+                    itemId={item.id}
+                    status={item.status}
+                    onDelete={handleDelete}
+                    onMarkSold={handleMarkSold}
+                    onEdit={handleEdit}
+                  />
                 </div>
               ))}
             </div>
@@ -159,6 +226,15 @@ function Items() {
           Add New Item
         </Link>
       </div>
+      {editingItem && (
+        <EditItemModel
+          item={editingItem}
+          brands={brands}
+          styles={styles}
+          onClose={() => setEditingItem(null)}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }

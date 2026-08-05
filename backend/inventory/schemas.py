@@ -1,9 +1,10 @@
 from ninja import Schema
 from datetime import datetime
+from ninja import FilterSchema, FilterLookup
+from typing import Optional, Annotated
 
 
 class ItemIn(Schema):
-    name: str
     brand_id: int
     style_id: int
     size: str
@@ -15,7 +16,6 @@ class ItemIn(Schema):
 
 class ItemOut(Schema):
     id: int
-    name: str
     brand: BrandOut
     style: StyleOut
     size: str
@@ -24,6 +24,23 @@ class ItemOut(Schema):
     price_sold: float | None = None
     status: str
     created_at: datetime
+    sell_time_days: Optional[int] = None
+
+    @staticmethod
+    def resolve_sell_time_days(obj):
+        if obj.status == "sold" and obj.sold_at:
+            return (obj.sold_at - obj.created_at).days
+        return None
+
+
+class ItemUpdate(Schema):
+    size: Optional[str] = None
+    category: Optional[str] = None
+    price_bought: Optional[float] = None
+    price_sold: Optional[float] = None
+    status: Optional[str] = None
+    brand_id: Optional[int] = None
+    style_id: Optional[int] = None
 
 
 class BrandIn(Schema):
@@ -48,3 +65,14 @@ class StatsOut(Schema):
     total_invested: float
     total_revenue: float
     total_profit: float
+    items_sold: int
+    sell_through_rate: float
+    avg_sell_days: Optional[int] = None
+
+
+class ItemFilterSchema(FilterSchema):
+    status: Optional[str] = None
+    category: Optional[str] = None
+    brand_id: Optional[int] = None
+    style_id: Optional[int] = None
+    name: Annotated[Optional[str], FilterLookup("name__icontains")] = None

@@ -81,6 +81,7 @@ class Item(models.Model):
     price_sold = models.DecimalField(decimal_places=2,
                                      max_digits=10, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    sold_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
