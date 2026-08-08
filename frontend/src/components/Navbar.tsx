@@ -3,14 +3,11 @@ import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Navbar() {
-  const [nav, setNav] = useState(true);
-
-  const handleNav = () => {
-    setNav(!nav);
-  };
-
+  const [nav, setNav] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleNav = () => setNav(!nav);
 
   const handlePricing = () => {
     if (location.pathname === "/") {
@@ -19,112 +16,108 @@ function Navbar() {
         ?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate("/");
-      setTimeout(() => {
-        document
-          .getElementById("pricing")
-          ?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+      setTimeout(
+        () =>
+          document
+            .getElementById("pricing")
+            ?.scrollIntoView({ behavior: "smooth" }),
+        100,
+      );
     }
   };
+
   const handleHome = () => {
     if (location.pathname === "/") {
       document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate("/");
-      setTimeout(() => {
-        document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+      setTimeout(
+        () =>
+          document
+            .getElementById("home")
+            ?.scrollIntoView({ behavior: "smooth" }),
+        100,
+      );
     }
   };
 
+  const linkClass =
+    "p-4 hover:text-green-primary transition-colors cursor-pointer";
+  const mobileLinkClass =
+    "w-full flex p-4 border-b border-border text-text-primary hover:text-green-primary transition-colors cursor-pointer uppercase";
+
   return (
-    <div className="fixed w-full bg-[#0e0f0d] text-white px-6 py-4 flex items-center h-24 justify-between z-50">
-      <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-4">
+    <div className="fixed w-full bg-bg text-text-primary px-6 py-4 flex items-center h-24 justify-between z-50">
+      <Link to="/" className="w-full text-3xl font-bold text-green-primary m-4">
         FLIPPED.
       </Link>
+
       <ul className="hidden md:flex items-center gap-1">
         <li>
-          <button
-            onClick={handleHome}
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
+          <button onClick={handleHome} className={linkClass}>
             About
           </button>
         </li>
         <li>
-          <Link to="/login" className="p-4 hover:text-[#7E8C54] cursor-pointer">
+          <Link to="/login" className={linkClass}>
             Login
           </Link>
         </li>
         <li>
-          <Link
-            to="/signup"
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
+          <Link to="/signup" className={linkClass}>
             Signup
           </Link>
         </li>
         <li>
-          <button
-            onClick={handlePricing}
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
+          <button onClick={handlePricing} className={linkClass}>
             Pricing
           </button>
         </li>
       </ul>
-      <div onClick={handleNav} className="block md:hidden">
-        {!nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
+
+      <div onClick={handleNav} className="block md:hidden cursor-pointer">
+        {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
 
       <div
-        className={
-          !nav
-            ? "fixed left-0 top-0 w-[60%]  h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-400 z-50"
-            : "fixed -left-full z-50 "
-        }
+        className={`fixed left-0 top-0 h-full w-[60%] bg-card border-r border-border z-50 transition-transform duration-300 ease-in-out ${nav ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <Link to="/" className="w-full text-3xl font-bold text-[#7E8C54] m-5">
-          FLIPPED.
-        </Link>
-
-        <ul onClick={handleNav} className="uppercase p-4 ">
+        <div className="mt-8 px-5">
+          <Link to="/" className="text-3xl font-bold text-green-primary">
+            FLIPPED.
+          </Link>
+        </div>
+        <ul onClick={handleNav} className="mt-6">
           <li>
-            <button
-              onClick={handleHome}
-              className=" w-full flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
+            <button onClick={handleHome} className={mobileLinkClass}>
               About
             </button>
           </li>
           <li>
-            <Link
-              to="/login"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
+            <Link to="/login" className={mobileLinkClass}>
               Login
             </Link>
           </li>
           <li>
-            <Link
-              to="/signup"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
+            <Link to="/signup" className={mobileLinkClass}>
               Signup
             </Link>
           </li>
           <li>
-            <button
-              onClick={handlePricing}
-              className=" w-full flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
+            <button onClick={handlePricing} className={mobileLinkClass}>
               Pricing
             </button>
           </li>
         </ul>
       </div>
+
+      {nav && (
+        <div
+          onClick={handleNav}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        />
+      )}
     </div>
   );
 }
-
 export default Navbar;

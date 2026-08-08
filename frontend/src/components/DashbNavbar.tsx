@@ -1,149 +1,102 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Link } from "react-router-dom";
 import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
   setSession: Dispatch<SetStateAction<boolean>>;
 }
-function DashbNavbar({ setSession }: Props) {
-  const [nav, setNav] = useState(true);
 
-  const handleNav = () => {
-    setNav(!nav);
-  };
+function DashbNavbar({ setSession }: Props) {
+  const [nav, setNav] = useState(false);
   const navigate = useNavigate();
+
+  const handleNav = () => setNav(!nav);
 
   const handleLog = () => {
     localStorage.removeItem("access");
     setSession(false);
     navigate("/");
   };
+
+  const linkClass =
+    "p-4 hover:text-green-primary transition-colors cursor-pointer";
+  const mobileLinkClass =
+    "flex p-4 border-b border-border text-text-primary hover:text-green-primary transition-colors cursor-pointer uppercase";
+
+  const navLinks = [
+    { to: "/dashboard", label: "Home" },
+    { to: "/items", label: "Items" },
+    { to: "/stores", label: "Stores" },
+    { to: "/trips", label: "Trips" },
+    { to: "/additem", label: "Add Item" },
+  ];
+
   return (
-    <div className="fixed w-full bg-[#0e0f0d]  bg-#000300 text-white px-6 py-4 flex items-center h-24 justify-between z-50">
+    <div className="fixed w-full bg-bg text-text-primary px-6 py-4 flex items-center h-24 justify-between z-50">
       <Link
         to="/dashboard"
-        className="w-full text-3xl font-bold text-[#7E8C54] m-4"
+        className="text-3xl font-bold text-green-primary m-4"
       >
         FLIPPED.
       </Link>
+
+      {/* Desktop */}
       <ul className="hidden md:flex items-center gap-1">
+        {navLinks.map(({ to, label }) => (
+          <li key={to}>
+            <Link to={to} className={linkClass}>
+              {label}
+            </Link>
+          </li>
+        ))}
         <li>
-          <Link
-            to="/dashboard"
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link to="/items" className="p-4 hover:text-[#7E8C54] cursor-pointer">
-            Items
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/stores"
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
-            Stores
-          </Link>
-        </li>
-        <li>
-          <Link to="/trips" className="p-4 hover:text-[#7E8C54] cursor-pointer">
-            Trips
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/additem"
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
-            addItems
-          </Link>
-        </li>
-        <li>
-          <button
-            onClick={handleLog}
-            className="p-4 hover:text-[#7E8C54] cursor-pointer"
-          >
-            logout
+          <button onClick={handleLog} className={linkClass}>
+            Logout
           </button>
         </li>
       </ul>
-      <div onClick={handleNav} className="block md:hidden">
-        {!nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
+
+      {/* Mobile toggle */}
+      <div onClick={handleNav} className="block md:hidden cursor-pointer">
+        {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
 
+      {/* Mobile drawer */}
       <div
-        className={
-          !nav
-            ? "fixed left-0 top-0 w-[60%]  h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-400 z-50"
-            : "fixed -left-full z-50"
-        }
+        className={`fixed left-0 top-0 h-full w-[60%] bg-card border-r border-border z-50 transition-transform duration-300 ease-in-out ${nav ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="mt-8">
-          {" "}
+        <div className="mt-8 px-5">
           <Link
             to="/dashboard"
-            className="w-full text-3xl font-bold text-[#7E8C54] m-5"
+            className="text-3xl font-bold text-green-primary"
           >
             FLIPPED.
           </Link>
         </div>
-
-        <ul onClick={handleNav} className="uppercase p-4 ">
+        <ul onClick={handleNav} className="mt-6">
+          {navLinks.map(({ to, label }) => (
+            <li key={to}>
+              <Link to={to} className={mobileLinkClass}>
+                {label}
+              </Link>
+            </li>
+          ))}
           <li>
-            <Link
-              to="/dashboard"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/items"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
-              items
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/stores"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
-              Stores
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/trips"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
-              Trips
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/additem"
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer"
-            >
-              addItems
-            </Link>
-          </li>
-          <li>
-            <button
-              onClick={handleLog}
-              className="flex p-4 border-b border-gray-600 hover:text-[#7E8C54] cursor-pointer w-full"
-            >
-              logout
+            <button onClick={handleLog} className={`${mobileLinkClass} w-full`}>
+              Logout
             </button>
           </li>
         </ul>
       </div>
+
+      {/* backdrop */}
+      {nav && (
+        <div
+          onClick={handleNav}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        />
+      )}
     </div>
   );
 }

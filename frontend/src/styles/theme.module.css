@@ -1,0 +1,20 @@
+:root {
+  /* Backgrounds */
+  --color-bg: #0F1712;
+  --color-surface: #1A2620;
+  --color-border: #2A3B31;
+
+  /* Brand green */
+  --color-primary: #3EB489;
+  --color-primary-hover: #2E9670;
+  --color-primary-muted: #1F4A38;
+
+  /* Text */
+  --color-text-primary: #EAF2ED;
+  --color-text-secondary: #8FA396;
+
+  /* Status */
+  --color-success: #4ADE80;
+  --color-warning: #F5C563;
+  --color-error: #F16C6C;
+}

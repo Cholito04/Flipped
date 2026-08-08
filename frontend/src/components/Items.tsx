@@ -9,12 +9,10 @@ interface Brand {
   id: number;
   brand: string;
 }
-
 interface Style {
   id: number;
   style: string;
 }
-
 interface Item {
   id: number;
   brand: Brand;
@@ -32,6 +30,9 @@ function Items() {
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [styles, setStyles] = useState<Style[]>([]);
 
   async function handleMarkSold(id: number) {
     try {
@@ -46,11 +47,6 @@ function Items() {
     }
   }
 
-  // add state
-  const [editingItem, setEditingItem] = useState<Item | null>(null);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [styles, setStyles] = useState<Style[]>([]);
-
   useEffect(() => {
     async function fetchData() {
       try {
@@ -63,17 +59,18 @@ function Items() {
         setBrands(brandsRes.data);
         setStyles(stylesRes.data);
       } catch (err: any) {
-        if (err.response?.status === 404) {
-          setError("Please login again");
-        } else {
-          setError("Failed to load items");
-        }
+        setError(
+          err.response?.status === 404
+            ? "Please login again"
+            : "Failed to load items",
+        );
       } finally {
         setLoading(false);
       }
     }
     fetchData();
   }, []);
+
   function handleSave(updated: any) {
     setItems((prev) =>
       prev.map((item) =>
@@ -81,12 +78,9 @@ function Items() {
       ),
     );
   }
-
   function handleEdit(id: number) {
-    const item = items.find((i) => i.id === id) || null;
-    setEditingItem(item);
+    setEditingItem(items.find((i) => i.id === id) || null);
   }
-
   async function handleDelete(id: number) {
     try {
       await api.delete(`/inventory/items/${id}`);
@@ -95,137 +89,144 @@ function Items() {
       setError("Failed to delete item");
     }
   }
-  useEffect(() => {
-    async function fetchitems() {
-      try {
-        const { data } = await api.get("/inventory/items");
-        console.log(data);
-        setItems(data);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
-          setError("Please login again");
-        } else {
-          setError("Failed to load items");
-        }
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
 
-    fetchitems();
-  }, []);
+  function getProfit(item: Item): string | null {
+    if (!item.price_sold) return null;
+    const profit = parseFloat(item.price_sold) - parseFloat(item.price_bought);
+    return profit.toFixed(2);
+  }
 
   if (loading) {
     return (
-      <div className="text-white text-center py-36">
+      <div className="text-text-primary text-center py-36">
         <h1 className="text-4xl">Loading items...</h1>
       </div>
     );
   }
+
   return (
     <div className="w-full min-h-screen px-6">
-      <div className="max-w-500 mx-auto pt-20">
+      <div className="mx-auto pt-20">
         <h1
           className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${style.chrome}`}
         >
-          {" "}
           Items
         </h1>
         {error && (
           <div className="mt-6 text-center text-red-400 text-lg">{error}</div>
         )}
-        <div className="mt-14 space-y-3">
+
+        <div className="mt-14">
           {items.length === 0 && (
-            <div className="text-center text-[#5a6e4a] mt-20">
+            <div className="text-center text-text-muted mt-20">
               No items yet — start by adding your first flip.
             </div>
           )}
-
           {items.length > 0 && (
-            <div className="mt-10  max-w-500">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-[#162416] p-5 mx-auto mt-5 rounded-2xl border border-[#395339] flex justify-between items-center"
-                >
-                  <div className="text-center">
-                    <p className="text-[#5a6e4a] text-xs">Brand</p>
-                    <p className="font-semibold text-[#d4e8b0]">
-                      {item.brand.brand}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[#5a6e4a] text-xs">Style</p>
-                    <p className="font-semibold text-[#d4e8b0]">
-                      {item.style.style}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[#5a6e4a] text-xs">Size</p>
-                    <p className="font-semibold text-[#d4e8b0]">{item.size}</p>
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-[#5a6e4a] text-xs">Bought</p>
-                    <p className="font-semibold text-[#d4e8b0]">
-                      ${item.price_bought}
-                    </p>
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-[#5a6e4a] text-xs">Sold</p>
-                    <p className="font-semibold text-[#d4e8b0]">
-                      {item.price_sold ? `$${item.price_sold}` : "—"}
-                    </p>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-xs text-[#5a6e4a]">Status</p>
-
-                    <p
-                      className={`text-center font-semibold ${
-                        item.status === "sold"
-                          ? "text-[#8aaa62]"
-                          : item.status === "listed"
-                            ? "text-yellow-400"
-                            : "text-[#da7373]"
-                      }`}
-                    >
-                      {item.status}
-                    </p>
-                  </div>
-                  <div>
-                    {item.status === "sold" && item.sell_time_days !== null && (
-                      <div className="text-center">
-                        <p className="text-[#5a6e4a] text-xs">Sold In</p>
-                        <p className="font-semibold text-[#8aaa62]">
-                          {item.sell_time_days}d
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {items.map((item) => {
+                const profit = getProfit(item);
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-card border border-border rounded-2xl p-5 flex flex-col gap-4"
+                  >
+                    {/* top row — brand/style + menu */}
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-text-primary font-bold text-lg leading-tight">
+                          {item.brand.brand}
+                        </p>
+                        <p className="text-text-muted text-sm">
+                          {item.style.style}
                         </p>
                       </div>
+                      <ItemMenu
+                        itemId={item.id}
+                        status={item.status}
+                        onDelete={handleDelete}
+                        onMarkSold={handleMarkSold}
+                        onEdit={handleEdit}
+                      />
+                    </div>
+
+                    {/* status badge */}
+                    <div>
+                      <span
+                        className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                          item.status === "sold"
+                            ? "text-status-sold border-status-sold bg-status-sold/10"
+                            : item.status === "listed"
+                              ? "text-status-listed border-status-listed bg-status-listed/10"
+                              : "text-status-unlisted border-status-unlisted bg-status-unlisted/10"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </div>
+
+                    {/* price row */}
+                    <div className="flex justify-between items-end border-t border-border pt-3">
+                      <div>
+                        <p className="text-text-muted text-xs uppercase tracking-widest">
+                          Bought
+                        </p>
+                        <p className="text-text-primary font-semibold">
+                          ${item.price_bought}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-text-muted text-xs uppercase tracking-widest">
+                          Sold
+                        </p>
+                        <p className="text-text-primary font-semibold">
+                          {item.price_sold ? `$${item.price_sold}` : "—"}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-text-muted text-xs uppercase tracking-widest">
+                          Profit
+                        </p>
+                        <p
+                          className={`font-bold ${
+                            profit === null
+                              ? "text-text-muted"
+                              : parseFloat(profit) >= 0
+                                ? "text-status-sold"
+                                : "text-red-400"
+                          }`}
+                        >
+                          {profit !== null ? `$${profit}` : "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* sell time — only on sold items */}
+                    {item.status === "sold" && item.sell_time_days !== null && (
+                      <p className="text-text-muted text-xs">
+                        Sold in{" "}
+                        <span className="text-status-sold font-semibold">
+                          {item.sell_time_days}d
+                        </span>
+                      </p>
                     )}
                   </div>
-                  <ItemMenu
-                    itemId={item.id}
-                    status={item.status}
-                    onDelete={handleDelete}
-                    onMarkSold={handleMarkSold}
-                    onEdit={handleEdit}
-                  />
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
+
       <div className="mt-10 p-10 text-center">
         <Link
           to="/additem"
-          className="bg-[#2a4a2a] text-[#d4e8b0] border border-[#3d6b3d] px-6 py-3 rounded-xl font-semibold hover:bg-[#3d6b3d] transition-all"
+          className="bg-green-primary text-text-primary border border-green-hover px-6 py-3 rounded-xl font-semibold hover:bg-green-hover transition-all"
         >
           Add New Item
         </Link>
       </div>
+
       {editingItem && (
         <EditItemModel
           item={editingItem}

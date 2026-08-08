@@ -1,22 +1,23 @@
 import { useState } from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { Dispatch, SetStateAction } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
 interface Props {
   setSession: Dispatch<SetStateAction<boolean>>;
 }
+
 function Login({ setSession }: Props) {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null); // Clear previous errors
-
+    setError(null);
     const formData = new FormData(e.currentTarget);
-
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
 
@@ -30,52 +31,58 @@ function Login({ setSession }: Props) {
         username,
         password,
       });
-
       localStorage.setItem("token", data.access);
       const token = localStorage.getItem("token");
       if (token) {
         const decoded = jwtDecode<{ sub: string }>(token);
-        console.log(decoded);
         localStorage.setItem("access", decoded.sub);
       }
-      setSession(true); 
+      setSession(true);
       navigate("/dashboard");
     } catch (err: any) {
-      setError("Username or password doesn't exist(case senseitive)");
+      setError("Username or password doesn't exist (case sensitive)");
       console.error(err);
     }
   }
 
+  const inputClass =
+    "bg-card border border-border text-text-primary rounded-lg px-4 py-3 w-full focus:outline-none focus:border-green-hover placeholder-text-muted";
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="w-full min-h-screen flex items-center justify-center">
-        <div className="bg-[#111811] border border-[#1e2a1e] w-full max-w-100 h-120 rounded-2xl overflow-hidden">
-          <div className="bg-[#2a4a2a] text-center px-8 py-6 border-b border-[#1e2a1e]">
-            <h1 className="text-4xl font-extrabold text-white">LOGIN</h1>
-            <p className="text-[#5a6e4a] text-sm mt-1">To Flipped account</p>
+        <div className="bg-card border border-border-dark w-full max-w-100 h-120 rounded-2xl overflow-hidden">
+          <div className="bg-green-primary text-center px-8 py-6 border-b border-border">
+            <h1 className="text-4xl font-extrabold text-silver-primary">
+              LOGIN
+            </h1>
+            <p className="text-silver-primary text-sm mt-1 opacity-70">
+              To Flipped account
+            </p>
           </div>
-
           <div className="px-8 py-14 flex flex-col gap-8">
             <input
               name="username"
-              className="bg-[#0d120d] border border-[#1e2a1e] text-[#d4e8b0] rounded-lg px-4 py-3 w-full focus:outline-none focus:border-[#3d6b3d] placeholder-[#3a4a3a]"
-              placeholder="username"
+              className={inputClass}
+              placeholder="Username"
               type="text"
             />
             <input
               name="password"
-              className="bg-[#0d120d] border border-[#1e2a1e] text-[#d4e8b0] rounded-lg px-4 py-3 w-full focus:outline-none focus:border-[#3d6b3d] placeholder-[#3a4a3a]"
+              className={inputClass}
               placeholder="Password"
               type="password"
             />
-
-            <button className="bg-[#2a4a2a] text-[#d4e8b0] border border-[#3d6b3d] px-6 py-3 rounded-xl font-semibold hover:bg-[#3d6b3d] transition-all mt-2">
+            <button
+              type="submit"
+              className="bg-green-primary text-text-primary border border-green-hover px-6 py-3 rounded-xl font-semibold hover:bg-green-hover transition-all mt-2"
+            >
               Login
             </button>
             {error && <p className="text-red-400 text-sm">{error}</p>}
-            <p className="text-[#5a6e4a] text-sm text-center">
+            <p className="text-text-muted text-sm text-center">
               Don't have an account?{" "}
-              <a href="/signup" className="text-[#8aaa62] hover:underline">
+              <a href="/signup" className="text-green-primary hover:underline">
                 sign up
               </a>
             </p>

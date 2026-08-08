@@ -23,12 +23,12 @@ function InlineAdd({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="text-sm text-[#8aaa62] hover:text-[#d4e8b0] transition-all"
+          className="text-sm text-green-primary hover:text-green-hover transition-all"
         >
           + Add {label}
         </button>
       ) : (
-        <div className="flex gap-2 items-center mt-1 rounded-2xl">
+        <div className="flex gap-2 items-center mt-1">
           <input
             autoFocus
             value={value}
@@ -44,12 +44,12 @@ function InlineAdd({
               }
             }}
             placeholder={`New ${label.toLowerCase()}...`}
-            className="bg-[#0b100b] border border-[#3d6b3d] text-[#d4e8b0] rounded-lg px-3 py-1.5 text-sm w-full focus:outline-none focus:ring-1 focus:ring-[#4d7a4d] placeholder-[#3a4a3a]"
+            className="bg-card border border-border text-text-primary rounded-lg px-3 py-1.5 text-sm w-full focus:outline-none focus:ring-1 focus:ring-green-hover placeholder-text-muted"
           />
           <button
             type="button"
             onClick={handleAdd}
-            className="text-[#8aaa62] hover:text-[#d4e8b0] text-sm font-bold px-1 transition-all"
+            className="text-green-primary hover:text-text-primary text-sm font-bold px-1 transition-all"
           >
             ✓
           </button>
@@ -59,7 +59,7 @@ function InlineAdd({
               setOpen(false);
               setValue("");
             }}
-            className="text-[#5a4a4a] hover:text-red-400 text-sm px-1 transition-all"
+            className="text-text-muted hover:text-red-400 text-sm px-1 transition-all"
           >
             ✕
           </button>

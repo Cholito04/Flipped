@@ -17,13 +17,10 @@ function ItemMenu({
 
   useEffect(() => {
     if (!open) return;
-
     function handleClickOutside(e: MouseEvent) {
-      if (!(e.target as Element).closest(`[data-menu-id="${itemId}"]`)) {
+      if (!(e.target as Element).closest(`[data-menu-id="${itemId}"]`))
         setOpen(false);
-      }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open, itemId]);
@@ -32,18 +29,18 @@ function ItemMenu({
     <div className="relative" data-menu-id={itemId}>
       <button
         onClick={() => setOpen(!open)}
-        className="text-[#5a6e4a] hover:text-[#d4e8b0] px-2 py-1 rounded transition-all"
+        className="text-text-muted hover:text-text-primary px-2 py-1 rounded transition-all"
       >
         ⋮
       </button>
       {open && (
-        <div className="absolute right-0 mt-1 w-40 bg-[#1e341e] border border-[#395339] rounded-xl shadow-lg z-10">
+        <div className="absolute right-0 mt-1 w-40 bg-card border border-border rounded-xl shadow-lg z-10">
           <button
             onClick={() => {
               onEdit(itemId);
               setOpen(false);
             }}
-            className="w-full text-left px-4 py-2 text-sm text-[#d4e8b0] hover:bg-[#2a4a2a] rounded-t-xl transition-all"
+            className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-green-primary rounded-t-xl transition-all"
           >
             Edit
           </button>
@@ -53,7 +50,7 @@ function ItemMenu({
                 onMarkSold(itemId);
                 setOpen(false);
               }}
-              className="w-full text-left px-4 py-2 text-sm text-[#8aaa62] hover:bg-[#2a4a2a] transition-all"
+              className="w-full text-left px-4 py-2 text-sm text-status-sold hover:bg-green-primary transition-all"
             >
               Mark as Sold
             </button>
@@ -63,7 +60,7 @@ function ItemMenu({
               onDelete(itemId);
               setOpen(false);
             }}
-            className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#2a1a1a] rounded-b-xl transition-all"
+            className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/30 rounded-b-xl transition-all"
           >
             Delete
           </button>
@@ -72,5 +69,4 @@ function ItemMenu({
     </div>
   );
 }
-
 export default ItemMenu;
