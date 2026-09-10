@@ -7,6 +7,7 @@ interface stats {
   total_revenue: number;
   total_profit: number;
   items_sold: number;
+  total_items: number;
   sell_through_rate: number;
   avg_sell_days: number | null;
 }
@@ -19,91 +20,109 @@ function Dashboard() {
     async function fetchStats() {
       try {
         const { data } = await api.get("/inventory/stats");
-        console.log(data);
         setStats(data);
       } catch (err: any) {
-        if (err.response?.status === 404) {
-          setError("Please login again");
-        } else {
-          setError("Failed to load stats");
-        }
+        setError(
+          err.response?.status === 404
+            ? "Please login again"
+            : "Failed to load stats",
+        );
         console.error(err);
       }
     }
     fetchStats();
   }, []);
 
+  const cardClass =
+    "flex flex-col text-center gap-2 bg-card border border-border rounded-2xl p-6";
+  const labelClass =
+    "text-green-primary text-xs font-semibold uppercase tracking-widest";
+  const valueClass = "text-text-primary text-4xl font-black";
   return (
-    <div>
-      <div className="mx-auto p-10">
-        <h1
-          className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${styles.chrome}`}
-        >
-          Dashboard
-        </h1>
-        {error && (
-          <div className="mt-6 text-center text-red-400 text-lg">{error}</div>
-        )}
-        {stats && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-10 text-text-primary">
-            <div className="flex flex-col text-center gap-2 bg-card border border-border rounded-4xl p-6">
-              <p className="text-green-primary text-m font-semibold uppercase tracking-widest">
-                Total Invested
-              </p>
-              <p className="text-text-primary text-4xl font-black">
-                ${stats.total_invested}
-              </p>
-            </div>
+    <div className="mx-auto p-10">
+      <h1
+        className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${styles.chrome}`}
+      >
+        Dashboard
+      </h1>
 
-            <div className="flex flex-col gap-2 text-center bg-card border border-border rounded-4xl p-6">
-              <p className="text-green-primary text-m font-semibold uppercase tracking-widest">
-                Total Revenue
-              </p>
-              <p className="text-text-primary text-4xl font-black">
-                ${stats.total_revenue}
-              </p>
-            </div>
+      {error && (
+        <div className="mt-6 text-center text-red-400 text-lg">{error}</div>
+      )}
 
-            <div className="flex flex-col text-center gap-2 bg-card border border-border rounded-4xl p-6">
-              <p className="text-green-primary text-m font-semibold uppercase tracking-widest">
-                Items Sold
-              </p>
-              <p className="text-text-primary text-4xl font-black">
-                {stats.items_sold}
-              </p>
+      {stats && (
+        <div className="mt-10">
+          {/* Inventory */}
+          <div className="flex items-center gap-4 mb-4  mt-5">
+            <h2 className="text-text-muted text-xs font-semibold uppercase tracking-widest whitespace-nowrap">
+              Inventory
+            </h2>
+            <div className="flex-1 border-t border-border" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className={cardClass}>
+              <p className={labelClass}>Total Items</p>
+              <p className={valueClass}>{stats.total_items}</p>
             </div>
+            <div className={cardClass}>
+              <p className={labelClass}>Items Sold</p>
+              <p className={valueClass}>{stats.items_sold}</p>
+            </div>
+            <div className={cardClass}>
+              <p className={labelClass}>Sell Rate</p>
+              <p className={valueClass}>{stats.sell_through_rate}%</p>
+            </div>
+          </div>
 
-            <div className="flex flex-col text-center gap-2 bg-card border border-border rounded-4xl p-6">
-              <p className="text-green-primary text-m font-semibold uppercase tracking-widest">
-                Net Profit
-              </p>
+          {/* Financials */}
+          <div className="flex items-center gap-4 mb-4  mt-5">
+            <h2 className="text-text-muted text-xs font-semibold uppercase tracking-widest whitespace-nowrap">
+              Financials
+            </h2>
+            <div className="flex-1 border-t border-border" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className={cardClass}>
+              <p className={labelClass}>Total Invested</p>
+              <p className={valueClass}>${stats.total_invested}</p>
+            </div>
+            <div className={cardClass}>
+              <p className={labelClass}>Total Revenue</p>
+              <p className={valueClass}>${stats.total_revenue}</p>
+            </div>
+            <div className={`${cardClass} sm:col-span-2`}>
+              <p className={labelClass}>Net Profit</p>
               <p
                 className={`text-4xl font-black ${stats.total_profit >= 0 ? "text-status-sold" : "text-red-400"}`}
               >
                 ${stats.total_profit}
               </p>
             </div>
+          </div>
 
-            <div className="flex flex-col text-center gap-2 bg-card border border-border rounded-4xl p-6">
-              <p className="text-green-primary text-m font-semibold uppercase tracking-widest">
-                Sell Rate
-              </p>
-              <p className="text-text-primary text-4xl font-black">
-                {stats.sell_through_rate}%
-              </p>
-            </div>
-
-            <div className="flex flex-col text-center gap-2 bg-card border border-border rounded-4xl p-6">
-              <p className="text-green-primary text-m font-semibold uppercase tracking-widest">
-                Avg Sell Time
-              </p>
-              <p className="text-text-primary text-4xl font-black">
+          {/* Performance */}
+          <div className="flex items-center gap-4 mb-4  mt-5">
+            <h2 className="text-text-muted text-xs font-semibold uppercase tracking-widest whitespace-nowrap">
+              Performance
+            </h2>
+            <div className="flex-1 border-t border-border" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className={cardClass}>
+              <p className={labelClass}>Avg Sell Time</p>
+              <p className={valueClass}>
                 {stats.avg_sell_days !== null ? `${stats.avg_sell_days}d` : "—"}
               </p>
             </div>
+            <div className={cardClass}>
+              <p className={labelClass}>Unsold Items</p>
+              <p className={valueClass}>
+                {stats.total_items - stats.items_sold}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

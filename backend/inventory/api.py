@@ -30,7 +30,6 @@ def create_item(request, payload: schemas.ItemIn):
 
     item = models.Item.objects.create(
         user=user,
-        name=payload.name,
         brand=brand,
         style=style,
         size=payload.size,
@@ -128,25 +127,23 @@ def list_styles(request):
 
 @router.get("/stats", response=schemas.StatsOut)
 def inventory_stats(request):
-
     items = models.Item.objects.filter(user_id=request.user.id)
+    sold_items = items.filter(status="sold")
 
-    total_invested = (
-        items.aggregate(total=Sum("price_bought"))["total"] or 0
-    )
+    total_invested = items.aggregate(total=Sum("price_bought"))["total"] or 0
 
-    total_revenue = (
-        items.aggregate(total=Sum("price_sold"))["total"] or 0
-    )
+    # only sum revenue from actually sold items
+    total_revenue = sold_items.aggregate(total=Sum("price_sold"))["total"] or 0
 
     total_profit = total_revenue - total_invested
-    total_items = items.count()
-    items_sold = items.filter(status="sold").count()
-    sell_through_rate = round((items_sold / total_items * 100),
-                              1) if total_items > 0 else 0.0
 
-    avg_sell_time = items.filter(
-        status="sold", sold_at__isnull=False
+    total_count = items.count()
+    items_sold = sold_items.count()
+    sell_through_rate = round((items_sold / total_count * 100),
+                              1) if total_count > 0 else 0.0
+
+    avg_sell_time = sold_items.filter(
+        sold_at__isnull=False
     ).annotate(
         sell_time=ExpressionWrapper(
             F("sold_at") - F("created_at"), output_field=DurationField()
@@ -162,4 +159,5 @@ def inventory_stats(request):
         "items_sold": items_sold,
         "sell_through_rate": sell_through_rate,
         "avg_sell_days": avg_sell_days,
+        "total_items": total_count,
     }

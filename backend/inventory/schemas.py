@@ -66,6 +66,7 @@ class StatsOut(Schema):
     total_revenue: float
     total_profit: float
     items_sold: int
+    total_items: int
     sell_through_rate: float
     avg_sell_days: Optional[int] = None
 

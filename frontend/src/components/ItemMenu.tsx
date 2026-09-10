@@ -5,12 +5,14 @@ function ItemMenu({
   status,
   onDelete,
   onMarkSold,
+  onMarkListed,
   onEdit,
 }: {
   itemId: number;
   status: string;
   onDelete: (id: number) => void;
   onMarkSold: (id: number) => void;
+  onMarkListed: (id: number) => void;
   onEdit: (id: number) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -44,6 +46,17 @@ function ItemMenu({
           >
             Edit
           </button>
+          {status === "not_listed" && (
+            <button
+              onClick={() => {
+                onMarkListed(itemId);
+                setOpen(false);
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-status-listed hover:bg-green-primary transition-all"
+            >
+              Mark as Listed
+            </button>
+          )}
           {status !== "sold" && (
             <button
               onClick={() => {

@@ -19,23 +19,21 @@ function AddItem() {
   const [styles, setStyles] = useState<Style[]>([]);
   const navigate = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
     const brand_id = formData.get("brand");
     const style_id = formData.get("style");
     const size = formData.get("size") as string;
     const category = formData.get("cat") as string;
     const price_bought = formData.get("price_bought") as string;
-    const price_sold = formData.get("price_sold") as string;
+    const price_sold = (formData.get("price_sold") as string) || null;
     const status = formData.get("status") as string;
 
     try {
       await api.post("/inventory/items", {
-        name,
         brand_id,
         style_id,
         size,
@@ -97,16 +95,6 @@ function AddItem() {
             <div className="flex flex-col gap-6">
               <h2 className={sectionHeaderClass}>Item Details</h2>
               <div className="grid grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className={labelClass}>Item Name</label>
-                  <input
-                    name="name"
-                    placeholder="Vintage Jacket"
-                    className={inputClass}
-                    required
-                  />
-                </div>
-
                 <div className="flex flex-col gap-2">
                   <label className={labelClass}>Category</label>
                   <select name="cat" className={inputClass}>
