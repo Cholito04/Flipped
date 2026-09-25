@@ -28,12 +28,19 @@ def create_item(request, payload: schemas.ItemIn):
         user=user
     )
 
+    store = get_object_or_404(
+        models.Store,
+        id=payload.store_id,
+        user=user
+    )
+
     item = models.Item.objects.create(
         user=user,
         brand=brand,
         style=style,
         size=payload.size,
         category=payload.category,
+        store=store,
         price_bought=payload.price_bought,
         price_sold=payload.price_sold,
         status=payload.status,
@@ -79,6 +86,10 @@ def update_item(request, item_id: int, payload: schemas.ItemUpdate):
         elif attr == "style_id":
             item.style = get_object_or_404(models.Style,
                                            id=value, user=request.user)
+
+        elif attr == "store_id":
+            item.store = get_object_or_404(models.Store,
+                                           id=value, user=request.user)
         elif attr == "status":
             if value == "sold" and item.status != "sold":
                 item.sold_at = timezone.now()
@@ -123,6 +134,22 @@ def create_style(request, payload: schemas.StyleIn):
 @router.get("/styles", response=List[schemas.StyleOut])
 def list_styles(request):
     return models.Style.objects.filter(user_id=request.user.id)
+
+
+@router.get("/stores", response=List[schemas.StoreOut])
+def list_stores(request):
+    return models.Store.objects.filter(user_id=request.user.id)
+
+
+@router.post("/stores",  response=schemas.StoreOut, summary="Create store",
+             description="Creates a new store in a user's inventory")
+def create_stores(request, payload: schemas.StoreIn):
+    user = get_object_or_404(User, id=request.user.id)
+    store = models.Store.objects.create(
+        user=user,
+        store=payload.store
+    )
+    return store
 
 
 @router.get("/stats", response=schemas.StatsOut)

@@ -23,7 +23,7 @@ function InlineAdd({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="text-sm text-green-primary hover:text-green-hover transition-all"
+          className="text-sm text-green-primary hover:text-green-hover transition-all px-4"
         >
           + Add {label}
         </button>

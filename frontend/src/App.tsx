@@ -11,6 +11,7 @@ import Items from "./components/Items";
 import AddItem from "./components/AddItem";
 import Stores from "./components/Stores";
 import Trips from "./components/Trips";
+import ItemCalendar from "./components/ItemCalender";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -62,6 +63,7 @@ function App() {
               <Route path="/items" element={<Items />} />
               <Route path="/additem" element={<AddItem />} />
               <Route path="/stores" element={<Stores />} />
+              <Route path="/itemcalander" element={<ItemCalendar />} />
               <Route path="/trips" element={<Trips />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>

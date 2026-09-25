@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import "../styles/calander.css";
 import style from "../styles/cs.module.css";
 import api from "../util/axios";
 
@@ -27,6 +30,10 @@ interface Item {
   price_sold: string | null;
   created_at: string;
 }
+
+type ValuePiece = Date | null;
+
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 function DayRow({ date, dayItems }: { date: string; dayItems: Item[] }) {
   const [open, setOpen] = useState(false);
@@ -165,10 +172,11 @@ function DayRow({ date, dayItems }: { date: string; dayItems: Item[] }) {
   );
 }
 
-function Trips() {
+function ItemCalender() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [value, onChange] = useState<Value>(new Date());
 
   useEffect(() => {
     async function fetchItems() {
@@ -195,42 +203,63 @@ function Trips() {
       </div>
     );
 
-  const grouped = items.reduce<Record<string, Item[]>>((acc, item) => {
-    const date = new Date(item.created_at).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(item);
-    return acc;
-  }, {});
+  // single date select
+  const selectedDate = value instanceof Date ? value : new Date();
 
-  const sortedDates = Object.keys(grouped).sort(
-    (a, b) => new Date(b).getTime() - new Date(a).getTime(),
-  );
+  const selectedItems = items.filter((item) => {
+    const itemDate = new Date(item.created_at);
+
+    return (
+      itemDate.getFullYear() === selectedDate.getFullYear() &&
+      itemDate.getMonth() === selectedDate.getMonth() &&
+      itemDate.getDate() === selectedDate.getDate()
+    );
+  });
+
+  const formattedDate = selectedDate.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
-    <div className="w-full min-h-screen px-6">
+    <div className="w-full min-h-screen px-6 grid grid-cols-2">
+      <div className="Sample">
+        <header>
+          <h1 className="text-text-primary">Select a date</h1>
+        </header>
+
+        <div className="Sample__container">
+          <main className="Sample__container__content">
+            <Calendar onChange={onChange} value={value} showWeekNumbers />
+          </main>
+        </div>
+      </div>
+
       <div className="mx-auto pt-20">
         <h1
           className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${style.chrome}`}
         >
           Activity
         </h1>
+
         {error && (
           <div className="mt-6 text-center text-red-400 text-lg">{error}</div>
         )}
 
-        <div className="mt-14 flex flex-col gap-3">
-          {sortedDates.map((date) => (
-            <DayRow key={date} date={date} dayItems={grouped[date]} />
-          ))}
+        <div className="mt-14">
+          {selectedItems.length > 0 ? (
+            <DayRow date={formattedDate} dayItems={selectedItems} />
+          ) : (
+            <div className="border border-border rounded-2xl p-10 text-center">
+              <p className="text-text-muted">No activity on {formattedDate}.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default Trips;
+export default ItemCalender;

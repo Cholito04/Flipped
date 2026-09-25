@@ -9,10 +9,16 @@ interface Style {
   id: number;
   style: string;
 }
+interface Store {
+  id: number;
+  store: string;
+}
+
 interface Item {
   id: number;
   brand: Brand;
   style: Style;
+  store: Store;
   size: string;
   category: string;
   price_bought: number | string;
@@ -24,12 +30,14 @@ function EditItemModal({
   item,
   brands,
   styles,
+  stores,
   onClose,
   onSave,
 }: {
   item: Item;
   brands: Brand[];
   styles: Style[];
+  stores: Store[];
   onClose: () => void;
   onSave: (updated: Item) => void;
 }) {
@@ -46,6 +54,7 @@ function EditItemModal({
       status: formData.get("status") as string,
       brand_id: Number(formData.get("brand")),
       style_id: Number(formData.get("style")),
+      store_id: Number(formData.get("store")),
     };
     try {
       const { data } = await api.patch(`/inventory/items/${item.id}`, payload);
@@ -103,6 +112,21 @@ function EditItemModal({
                 {styles.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.style}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className={labelClass}>Store</label>
+              <select
+                name="store"
+                defaultValue={item.store?.id ?? ""}
+                className={inputClass}
+              >
+                {stores.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.store}
                   </option>
                 ))}
               </select>

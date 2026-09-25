@@ -13,10 +13,16 @@ interface Style {
   id: number;
   style: string;
 }
+interface Store {
+  id: number;
+  store: string;
+}
+
 interface Item {
   id: number;
   brand: Brand;
   style: Style;
+  store: Store;
   size: string;
   category: string;
   status: string;
@@ -33,6 +39,7 @@ function Items() {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [styles, setStyles] = useState<Style[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
 
@@ -40,12 +47,14 @@ function Items() {
   useEffect(() => {
     async function fetchMeta() {
       try {
-        const [brandsRes, stylesRes] = await Promise.all([
+        const [brandsRes, stylesRes, storeRes] = await Promise.all([
           api.get("/inventory/brands"),
           api.get("/inventory/styles"),
+          api.get("/inventory/stores"),
         ]);
         setBrands(brandsRes.data);
         setStyles(stylesRes.data);
+        setStores(storeRes.data);
       } catch (err) {
         console.error(err);
       }
@@ -290,6 +299,7 @@ function Items() {
           item={editingItem}
           brands={brands}
           styles={styles}
+          stores={stores}
           onClose={() => setEditingItem(null)}
           onSave={handleSave}
         />

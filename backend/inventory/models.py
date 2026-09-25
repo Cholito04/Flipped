@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 
 
-# Create your models here.
 class Style(models.Model):
     user = models.ForeignKey(
       settings.AUTH_USER_MODEL,
@@ -23,6 +22,17 @@ class Brand(models.Model):
 
     class Meta:
         unique_together = ["user", "brand"]
+
+
+class Store(models.Model):
+    user = models.ForeignKey(
+      settings.AUTH_USER_MODEL,
+      on_delete=models.CASCADE
+    )
+    store = models.CharField(max_length=100)
+
+    class Meta:
+        unique_together = ["user", "store"]
 
 
 class Item(models.Model):
@@ -73,6 +83,11 @@ class Item(models.Model):
     size = models.CharField(
         max_length=10,
         choices=SIZE_CHOICES,
+        null=True
+    )
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.SET_NULL,
         null=True
     )
     image_url = models.URLField(blank=True, null=True)

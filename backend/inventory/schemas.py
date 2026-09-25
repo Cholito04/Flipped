@@ -9,6 +9,7 @@ class ItemIn(Schema):
     style_id: int
     size: str
     category: str
+    store_id: int | None = None
     price_bought: float | None = None
     price_sold: float | None = None
     status: str
@@ -20,6 +21,7 @@ class ItemOut(Schema):
     style: StyleOut
     size: str
     category: str
+    store: StoreOut | None
     price_bought: float | None
     price_sold: float | None = None
     status: str
@@ -41,6 +43,7 @@ class ItemUpdate(Schema):
     status: Optional[str] = None
     brand_id: Optional[int] = None
     style_id: Optional[int] = None
+    store_id: Optional[int] = None
 
 
 class BrandIn(Schema):
@@ -61,6 +64,15 @@ class StyleOut(Schema):
     style: str
 
 
+class StoreIn(Schema):
+    store: str
+
+
+class StoreOut(Schema):
+    id: int
+    store: str
+
+
 class StatsOut(Schema):
     total_invested: float
     total_revenue: float
@@ -76,4 +88,5 @@ class ItemFilterSchema(FilterSchema):
     category: Optional[str] = None
     brand_id: Optional[int] = None
     style_id: Optional[int] = None
+    store_id: Optional[int] = None
     name: Annotated[Optional[str], FilterLookup("name__icontains")] = None

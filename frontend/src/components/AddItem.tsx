@@ -13,10 +13,16 @@ interface Style {
   style: string;
 }
 
+interface Store {
+  id: number;
+  store: string;
+}
+
 function AddItem() {
   const [error, setError] = useState<string | null>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [styles, setStyles] = useState<Style[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -28,6 +34,7 @@ function AddItem() {
     const style_id = formData.get("style");
     const size = formData.get("size") as string;
     const category = formData.get("cat") as string;
+    const store_id = formData.get("store");
     const price_bought = formData.get("price_bought") as string;
     const price_sold = (formData.get("price_sold") as string) || null;
     const status = formData.get("status") as string;
@@ -38,6 +45,7 @@ function AddItem() {
         style_id,
         size,
         category,
+        store_id,
         price_bought,
         price_sold,
         status,
@@ -59,8 +67,10 @@ function AddItem() {
       try {
         const brandsRes = await api.get("/inventory/brands");
         const stylesRes = await api.get("/inventory/styles");
+        const storesRes = await api.get("/inventory/stores");
         setBrands(brandsRes.data);
         setStyles(stylesRes.data);
+        setStores(storesRes.data);
       } catch (err) {
         console.error(err);
       }
@@ -71,9 +81,9 @@ function AddItem() {
   const inputClass =
     "bg-card border border-border text-text-primary rounded-full px-5 py-3 w-full focus:outline-none focus:border-green-hover focus:ring-1 focus:ring-green-hover/30 placeholder-text-muted transition-all";
   const labelClass =
-    "text-text-muted text-xs font-semibold uppercase tracking-widest";
+    "text-text-muted text-xs font-semibold uppercase tracking-widest px-4";
   const sectionHeaderClass =
-    "text-text-muted text-xs font-semibold uppercase tracking-widest border-b border-border-dark pb-3";
+    "text-text-muted text-xs font-semibold uppercase tracking-widest border-b border-border-dark mb-5 pb-2";
 
   return (
     <form onSubmit={handleSubmit}>
@@ -92,7 +102,7 @@ function AddItem() {
           {/* Form */}
           <div className="max-w-2xl mx-auto px-8 py-10 flex flex-col gap-10 text-text-primary">
             {/* Item Details */}
-            <div className="flex flex-col gap-6">
+            <div>
               <h2 className={sectionHeaderClass}>Item Details</h2>
               <div className="grid grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
@@ -153,6 +163,32 @@ function AddItem() {
                           style: value,
                         });
                         setStyles((prev) => [...prev, data]);
+                      } catch (err) {
+                        console.error(err);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className={labelClass}>Store</label>
+                  <select name="store" className={inputClass}>
+                    <option value="" disabled>
+                      Select a store
+                    </option>
+                    {stores.map((store) => (
+                      <option key={store.id} value={store.id}>
+                        {store.store}
+                      </option>
+                    ))}
+                  </select>
+                  <InlineAdd
+                    label="Store"
+                    onAdd={async (value) => {
+                      try {
+                        const { data } = await api.post("/inventory/stores", {
+                          store: value,
+                        });
+                        setStores((prev) => [...prev, data]);
                       } catch (err) {
                         console.error(err);
                       }

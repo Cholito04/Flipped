@@ -7,6 +7,7 @@ from .models import Item
 
 # Create your tests here.
 
+
 class ItemTest(TestCase):
     def setUp(self):
         self.ninja_client = TestClient(router)
