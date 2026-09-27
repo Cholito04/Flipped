@@ -224,38 +224,72 @@ function ItemCalender() {
   });
 
   return (
-    <div className="w-full min-h-screen px-6 grid grid-cols-2">
-      <div className="Sample">
-        <header>
-          <h1 className="text-text-primary">Select a date</h1>
-        </header>
-
-        <div className="Sample__container">
-          <main className="Sample__container__content">
-            <Calendar onChange={onChange} value={value} showWeekNumbers />
-          </main>
-        </div>
-      </div>
-
-      <div className="mx-auto pt-20">
-        <h1
-          className={`lg:text-6xl text-5xl font-extrabold mt-20 relative z-1 ${style.chrome}`}
-        >
-          Activity
-        </h1>
-
-        {error && (
-          <div className="mt-6 text-center text-red-400 text-lg">{error}</div>
-        )}
-
-        <div className="mt-14">
-          {selectedItems.length > 0 ? (
-            <DayRow date={formattedDate} dayItems={selectedItems} />
-          ) : (
-            <div className="border border-border rounded-2xl p-10 text-center">
-              <p className="text-text-muted">No activity on {formattedDate}.</p>
+    <div className="w-full px-10 sm:px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-8 lg:gap-12 pt-8 lg:pt-16">
+          {/* Calendar */}
+          <div className="w-full mt-20">
+            <div className="mb-4">
+              <h1 className="text-text-primary text-xl font-semibold">
+                Select a date
+              </h1>
+              <p className="text-text-muted text-sm mt-1">
+                Choose a date to view your activity
+              </p>
             </div>
-          )}
+
+            <div className="calendar-wrapper">
+              <Calendar
+                onChange={onChange}
+                value={value}
+                showWeekNumbers
+                tileContent={({ date, view }) => {
+                  if (view !== "month") return null;
+
+                  const hasItems = items.some((item) => {
+                    const itemDate = new Date(item.created_at);
+
+                    return (
+                      itemDate.getFullYear() === date.getFullYear() &&
+                      itemDate.getMonth() === date.getMonth() &&
+                      itemDate.getDate() === date.getDate()
+                    );
+                  });
+
+                  return hasItems ? (
+                    <div className="activity-dot">•</div>
+                  ) : null;
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Activity */}
+          <div className="w-full mt-14">
+            <h1
+              className={`lg:text-6xl text-5xl font-extrabold relative z-1 ${style.chrome}`}
+            >
+              Activity
+            </h1>
+
+            {error && (
+              <div className="mt-6 text-center text-red-400 text-lg">
+                {error}
+              </div>
+            )}
+
+            <div className="mt-8">
+              {selectedItems.length > 0 ? (
+                <DayRow date={formattedDate} dayItems={selectedItems} />
+              ) : (
+                <div className="border border-border rounded-2xl p-10 text-center">
+                  <p className="text-text-muted">
+                    No activity on {formattedDate}.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
