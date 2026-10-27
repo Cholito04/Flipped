@@ -209,7 +209,7 @@ function Trips() {
 
   const sortedDates = Object.keys(grouped).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
-  );
+  );  
 
   return (
     <div className="w-full min-h-screen px-6">

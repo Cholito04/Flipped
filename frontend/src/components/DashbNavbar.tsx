@@ -28,6 +28,7 @@ function DashbNavbar({ setSession }: Props) {
     { to: "/dashboard", label: "Home" },
     { to: "/items", label: "Items" },
     { to: "/stores", label: "Stores" },
+    { to: "/stats", label: "Stats" },
     { to: "/trips", label: "Trips" },
     { to: "/itemcalander", label: "Calander" },
     { to: "/additem", label: "Add Item" },

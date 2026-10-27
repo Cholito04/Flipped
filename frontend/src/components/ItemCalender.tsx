@@ -35,14 +35,20 @@ type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-function DayRow({ date, dayItems }: { date: string; dayItems: Item[] }) {
+function StoreRow({
+  store,
+  storeItems,
+}: {
+  store: string;
+  storeItems: Item[];
+}) {
   const [open, setOpen] = useState(false);
 
-  const spent = dayItems.reduce(
+  const spent = storeItems.reduce(
     (sum, i) => sum + parseFloat(i.price_bought),
     0,
   );
-  const earned = dayItems
+  const earned = storeItems
     .filter((i) => i.status === "sold" && i.price_sold)
     .reduce((sum, i) => sum + parseFloat(i.price_sold!), 0);
   const profit = earned - spent;
@@ -60,9 +66,11 @@ function DayRow({ date, dayItems }: { date: string; dayItems: Item[] }) {
           >
             <h1></h1>
           </span>
-          <span className="text-text-primary font-semibold text-m">{date}</span>
+          <span className="text-text-primary font-semibold text-m">
+            {store}
+          </span>
           <span className="text-text-muted text-m">
-            {dayItems.length} item{dayItems.length !== 1 ? "s" : ""}
+            {storeItems.length} item{storeItems.length !== 1 ? "s" : ""}
           </span>
         </div>
 
@@ -95,7 +103,7 @@ function DayRow({ date, dayItems }: { date: string; dayItems: Item[] }) {
       {open && (
         <div className="border-t border-border">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-            {dayItems.map((item) => {
+            {storeItems.map((item) => {
               const itemProfit = item.price_sold
                 ? (
                     parseFloat(item.price_sold) - parseFloat(item.price_bought)
@@ -216,6 +224,21 @@ function ItemCalender() {
     );
   });
 
+  const groupedStores = selectedItems.reduce<Record<string, Item[]>>(
+    (acc, item) => {
+      const store = item.store?.store ?? "Unknown Store";
+
+      if (!acc[store]) {
+        acc[store] = [];
+      }
+
+      acc[store].push(item);
+
+      return acc;
+    },
+    {},
+  );
+
   const formattedDate = selectedDate.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -265,30 +288,20 @@ function ItemCalender() {
           </div>
 
           {/* Activity */}
-          <div className="w-full mt-14">
-            <h1
-              className={`lg:text-6xl text-5xl font-extrabold relative z-1 ${style.chrome}`}
-            >
-              Activity
-            </h1>
-
-            {error && (
-              <div className="mt-6 text-center text-red-400 text-lg">
-                {error}
+          <div className="mt-8">
+            {selectedItems.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {Object.entries(groupedStores).map(([store, storeItems]) => (
+                  <StoreRow key={store} store={store} storeItems={storeItems} />
+                ))}
+              </div>
+            ) : (
+              <div className="border border-border rounded-2xl p-10 text-center">
+                <p className="text-text-muted">
+                  No activity on {formattedDate}.
+                </p>
               </div>
             )}
-
-            <div className="mt-8">
-              {selectedItems.length > 0 ? (
-                <DayRow date={formattedDate} dayItems={selectedItems} />
-              ) : (
-                <div className="border border-border rounded-2xl p-10 text-center">
-                  <p className="text-text-muted">
-                    No activity on {formattedDate}.
-                  </p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>

@@ -81,7 +81,7 @@ function Dashboard() {
             </h2>
             <div className="flex-1 border-t border-border" />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div className={cardClass}>
               <p className={labelClass}>Total Invested</p>
               <p className={valueClass}>${stats.total_invested}</p>
@@ -90,7 +90,7 @@ function Dashboard() {
               <p className={labelClass}>Total Revenue</p>
               <p className={valueClass}>${stats.total_revenue}</p>
             </div>
-            <div className={`${cardClass} sm:col-span-2`}>
+            <div className={`${cardClass}`}>
               <p className={labelClass}>Net Profit</p>
               <p
                 className={`text-4xl font-black ${stats.total_profit >= 0 ? "text-status-sold" : "text-red-400"}`}
