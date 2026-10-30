@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../util/axios";
 import InlineAdd from "../util/InlineAdd";
 
@@ -271,6 +271,12 @@ function AddItem() {
               >
                 Add Item
               </button>
+              <Link
+                to="/bulkadd"
+                className="text-center text-text-muted hover:text-text-primary text-sm transition-all"
+              >
+                Adding a bunch at once? Bulk add
+              </Link>
             </div>
           </div>
         </div>

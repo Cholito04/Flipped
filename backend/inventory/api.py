@@ -1,12 +1,21 @@
+from decimal import ROUND_DOWN, Decimal
+from ninja.errors import HttpError
+from django.db import transaction
 from ninja import Router, Query
 from . import schemas, models
 from ninja_simple_jwt.auth.ninja_auth import HttpJwtAuth
 from django.shortcuts import get_object_or_404
 from typing import List
 from django.contrib.auth import get_user_model
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.utils import timezone
-from django.db.models import Avg, F, ExpressionWrapper, DurationField
+from django.db.models import (
+    Avg,
+    F,
+    ExpressionWrapper,
+    DurationField,
+    DecimalField,
+)
 
 router = Router(auth=HttpJwtAuth(), tags=["inventory"])
 User = get_user_model()
@@ -103,6 +112,48 @@ def update_item(request, item_id: int, payload: schemas.ItemUpdate):
     return item
 
 
+@router.post("/items/bulk", response=List[schemas.ItemOut], summary="Bulk create items")
+def bulk_create_items(request, payload: schemas.ItemBulkIn):
+    qty = len(payload.items)
+    if not 1 <= qty <= 500:
+        raise HttpError(400, "Add between 1 and 500 items")
+    if payload.total_price < 0:
+        raise HttpError(400, "Total price can't be negative")
+    if payload.status == "sold":
+        raise HttpError(400, "Bulk items can't be added as sold")
+
+    store = get_object_or_404(models.Store, id=payload.store_id, user_id=request.user.id)
+
+    brand_ids = {r.brand_id for r in payload.items}
+    style_ids = {r.style_id for r in payload.items}
+    brands = {b.id: b for b in models.Brand.objects.filter(user_id=request.user.id, id__in=brand_ids)}
+    styles = {s.id: s for s in models.Style.objects.filter(user_id=request.user.id, id__in=style_ids)}
+    if len(brands) != len(brand_ids) or len(styles) != len(style_ids):
+        raise HttpError(400, "Invalid brand or style")
+
+    # split evenly, then hand out leftover cents so the total is exact
+    base = (payload.total_price / qty).quantize(Decimal("0.01"),
+                                                rounding=ROUND_DOWN)
+    prices = [base] * qty
+    for i in range(int((payload.total_price - base * qty) * 100)):
+        prices[i] += Decimal("0.01")
+
+    with transaction.atomic():
+        return [
+            models.Item.objects.create(
+                user_id=request.user.id,
+                brand=brands[row.brand_id],
+                style=styles[row.style_id],
+                store=store,
+                size=row.size,
+                category=row.category,
+                status=payload.status,
+                price_bought=price,
+            )
+            for row, price in zip(payload.items, prices)
+        ]
+
+
 @router.post("/brands",  response=schemas.BrandOut, summary="Create brand",
              description="Creates a new brand in a user's inventory")
 def create_brand(request, payload: schemas.BrandIn):
@@ -179,6 +230,31 @@ def inventory_stats(request):
 
     avg_sell_days = avg_sell_time.days if avg_sell_time else None
 
+    # avg profit per sold item
+    profit_expr = ExpressionWrapper(
+        F("price_sold") - F("price_bought"),
+        output_field=DecimalField(max_digits=10, decimal_places=2),
+    )
+
+    def best_by(field):
+        return (
+            sold_items
+            .values(field)
+            .annotate(
+                avg_profit=Avg(profit_expr),
+                total_sold=Count("id"),
+            )
+            .filter(total_sold__gte=2)
+            .order_by("-avg_profit")
+            .first()
+        )
+
+    best_brand = best_by("brand__brand")
+    best_style = best_by("style__style")
+    best_store = best_by("store__store")
+
+    avg_profit_per_item = sold_items.aggregate(avg=Avg(profit_expr))["avg"] or 0
+
     return {
         "total_invested": float(total_invested),
         "total_revenue": float(total_revenue),
@@ -187,4 +263,32 @@ def inventory_stats(request):
         "sell_through_rate": sell_through_rate,
         "avg_sell_days": avg_sell_days,
         "total_items": total_count,
+        "avg_profit_per_item": round(float(avg_profit_per_item), 2),
+        "best_brand": (
+            best_brand["brand__brand"] if best_brand else None
+        ),
+        "best_brand_avg_profit": (
+            round(best_brand["avg_profit"], 2) if best_brand else None
+        ),
+        "best_brand_total_sold": (
+            best_brand["total_sold"] if best_brand else None
+        ),
+        "best_style": (
+            best_style["style__style"] if best_style else None
+        ),
+        "best_style_avg_profit": (
+            round(best_style["avg_profit"], 2) if best_style else None
+        ),
+        "best_style_total_sold": (
+            best_style["total_sold"] if best_style else None
+        ),
+        "best_store": (
+            best_store["store__store"] if best_store else None
+        ),
+        "best_store_avg_profit": (
+            round(best_store["avg_profit"], 2) if best_store else None
+        ),
+        "best_store_total_sold": (
+            best_store["total_sold"] if best_store else None
+        ),
     }

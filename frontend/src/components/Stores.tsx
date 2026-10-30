@@ -54,11 +54,7 @@ function StoreRow({
         className="w-full flex items-center justify-between px-4 py-8 bg-card hover:bg-border/30 transition-all"
       >
         <div className="flex items-center gap-4">
-          <span
-            className={`transition-transform duration-200 text-text-muted text-xs ${open ? "rotate-90" : ""}`}
-          >
-            <h1></h1>
-          </span>
+          <span className={`transition-transform...`}></span>
           <span className="text-text-primary font-semibold text-m">
             {store}
           </span>

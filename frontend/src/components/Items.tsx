@@ -29,6 +29,7 @@ interface Item {
   price_bought: string;
   price_sold: string | null;
   created_at: string;
+  sold_at: string | null;
   sell_time_days: number | null;
 }
 
@@ -285,13 +286,22 @@ function Items() {
         </div>
       </div>
 
-      <div className="mt-10 p-10 text-center">
-        <Link
-          to="/additem"
-          className="bg-green-primary text-text-primary border border-green-hover px-6 py-3 rounded-xl font-semibold hover:bg-green-hover transition-all"
-        >
-          Add New Item
-        </Link>
+      <div className="mt-10 p-10">
+        <div className="flex gap-10 items-center justify-center">
+          <Link
+            to="/additem"
+            className="bg-green-primary text-text-primary border border-green-hover px-6 py-3 rounded-xl font-semibold hover:bg-green-hover transition-all"
+          >
+            Add New Item
+          </Link>
+
+          <Link
+            to="/bulkadd"
+            className="bg-green-primary text-text-primary border border-green-hover px-6 py-3 rounded-xl font-semibold hover:bg-green-hover transition-all"
+          >
+            Bulk Add Items
+          </Link>
+        </div>
       </div>
 
       {editingItem && (

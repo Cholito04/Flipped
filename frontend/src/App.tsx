@@ -13,6 +13,7 @@ import Stores from "./components/Stores";
 import Trips from "./components/Trips";
 import ItemCalendar from "./components/ItemCalender";
 import Stats from "./components/Stats";
+import BulkAdd from "./components/BulkAdd";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -67,6 +68,7 @@ function App() {
               <Route path="/itemcalander" element={<ItemCalendar />} />
               <Route path="/trips" element={<Trips />} />
               <Route path="/stats" element={<Stats />} />
+              <Route path="/bulkadd" element={<BulkAdd />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </>
