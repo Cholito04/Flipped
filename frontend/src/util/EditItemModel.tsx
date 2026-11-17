@@ -1,36 +1,12 @@
 import { useState } from "react";
 import api from "../util/axios";
-
-interface Brand {
-  id: number;
-  brand: string;
-}
-interface Style {
-  id: number;
-  style: string;
-}
-interface Store {
-  id: number;
-  store: string;
-}
-
-interface Item {
-  id: number;
-  brand: Brand;
-  style: Style;
-  store: Store;
-  size: string;
-  category: string;
-  price_bought: number | string;
-  price_sold?: number | string | null;
-  status: string;
-}
-
+import type { Brand, Style, Store, Item } from "../util/Types";
 function EditItemModal({
   item,
   brands,
   styles,
   stores,
+  sellMode = false,
   onClose,
   onSave,
 }: {
@@ -38,6 +14,7 @@ function EditItemModal({
   brands: Brand[];
   styles: Style[];
   stores: Store[];
+  sellMode?: boolean;
   onClose: () => void;
   onSave: (updated: Item) => void;
 }) {
@@ -72,6 +49,7 @@ function EditItemModal({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+      {sellMode ? "MARK AS SOLD" : "EDIT ITEM"}
       <div className="bg-bg border border-border rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
         <div className="bg-green-primary text-center px-8 py-6 flex items-center justify-between">
           <h2 className="text-2xl font-black text-silver-primary tracking-wide">
@@ -187,6 +165,8 @@ function EditItemModal({
                   step="0.01"
                   name="price_sold"
                   defaultValue={item.price_sold ?? ""}
+                  autoFocus={sellMode}
+                  required={sellMode}
                   className={inputClass}
                   placeholder="—"
                 />
@@ -197,7 +177,7 @@ function EditItemModal({
               <label className={labelClass}>Status</label>
               <select
                 name="status"
-                defaultValue={item.status}
+                defaultValue={sellMode ? "sold" : item.status}
                 className={inputClass}
               >
                 <option value="not_listed">Not Listed</option>

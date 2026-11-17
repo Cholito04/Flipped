@@ -1,6 +1,7 @@
 import styles from "../styles/cs.module.css";
 import { useState, useEffect } from "react";
 import api from "../util/axios";
+import StatsCharts from "../util/StatsCharts";
 
 interface stats {
   total_invested: number;
@@ -192,6 +193,8 @@ function Stats() {
           </div>
         </div>
       )}
+      {sectionHeader("Trends")}
+      <StatsCharts />
     </div>
   );
 }

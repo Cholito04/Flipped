@@ -2,67 +2,18 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import style from "../styles/cs.module.css";
 import api from "../util/axios";
-import ItemMenu from "./ItemMenu";
-import EditItemModel from "../util/EditItemModel";
+import { useItemActions } from "../util/useItemActions";
 
-interface Brand {
-  id: number;
-  brand: string;
-}
-interface Style {
-  id: number;
-  style: string;
-}
-interface Store {
-  id: number;
-  store: string;
-}
-
-interface Item {
-  id: number;
-  brand: Brand;
-  style: Style;
-  store: Store;
-  size: string;
-  category: string;
-  status: string;
-  price_bought: string;
-  price_sold: string | null;
-  created_at: string;
-  sold_at: string | null;
-  sell_time_days: number | null;
-}
+import type { Item } from "../util/Types";
+import ItemCard from "../util/ItemCard";
 
 function Items() {
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingItem, setEditingItem] = useState<Item | null>(null);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [styles, setStyles] = useState<Style[]>([]);
-  const [stores, setStores] = useState<Store[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
-
-  // initial load for brands/styles — runs once
-  useEffect(() => {
-    async function fetchMeta() {
-      try {
-        const [brandsRes, stylesRes, storeRes] = await Promise.all([
-          api.get("/inventory/brands"),
-          api.get("/inventory/styles"),
-          api.get("/inventory/stores"),
-        ]);
-        setBrands(brandsRes.data);
-        setStyles(stylesRes.data);
-        setStores(storeRes.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchMeta();
-  }, []);
-
+  const { menu, modal } = useItemActions(setItems, setError);
   // items fetch — reruns when filters change
   useEffect(() => {
     async function fetchItems() {
@@ -87,58 +38,6 @@ function Items() {
     }
     fetchItems();
   }, [statusFilter, categoryFilter]);
-
-  async function handleMarkSold(id: number) {
-    try {
-      const { data } = await api.patch(`/inventory/items/${id}`, {
-        status: "sold",
-      });
-      setItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, ...data } : item)),
-      );
-    } catch {
-      setError("Failed to update item");
-    }
-  }
-
-  function handleSave(updated: any) {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === updated.id ? { ...item, ...updated } : item,
-      ),
-    );
-  }
-
-  async function handleMarkListed(id: number) {
-    try {
-      const { data } = await api.patch(`/inventory/items/${id}`, {
-        status: "listed",
-      });
-      setItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, ...data } : item)),
-      );
-    } catch {
-      setError("Failed to update item");
-    }
-  }
-  async function handleDelete(id: number) {
-    try {
-      await api.delete(`/inventory/items/${id}`);
-      setItems((prev) => prev.filter((item) => item.id !== id));
-    } catch {
-      setError("Failed to delete item");
-    }
-  }
-
-  function handleEdit(id: number) {
-    setEditingItem(items.find((i) => i.id === id) || null);
-  }
-
-  function getProfit(item: Item): string | null {
-    if (!item.price_sold) return null;
-    const profit = parseFloat(item.price_sold) - parseFloat(item.price_bought);
-    return profit.toFixed(2);
-  }
 
   if (loading) {
     return (
@@ -204,84 +103,9 @@ function Items() {
             </div>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {items.map((item) => {
-              const profit = getProfit(item);
-              return (
-                <div
-                  key={item.id}
-                  className="bg-card border border-border rounded-2xl p-5 flex flex-col gap-4"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-text-primary font-bold text-lg leading-tight">
-                        {item.brand.brand} {item.category}
-                      </p>
-                      <p className="text-text-muted text-sm">
-                        {item.style.style}
-                      </p>
-                    </div>
-                    <ItemMenu
-                      itemId={item.id}
-                      status={item.status}
-                      onDelete={handleDelete}
-                      onMarkSold={handleMarkSold}
-                      onMarkListed={handleMarkListed}
-                      onEdit={handleEdit}
-                    />
-                  </div>
-
-                  <span
-                    className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border w-fit ${
-                      item.status === "sold"
-                        ? "text-status-sold border-status-sold bg-status-sold/10"
-                        : item.status === "listed"
-                          ? "text-status-listed border-status-listed bg-status-listed/10"
-                          : "text-status-unlisted border-status-unlisted bg-status-unlisted/10"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-
-                  <div className="flex justify-between items-end border-t border-border pt-3">
-                    <div>
-                      <p className="text-text-muted text-xs uppercase tracking-widest">
-                        Bought
-                      </p>
-                      <p className="text-text-primary font-semibold">
-                        ${item.price_bought}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-text-muted text-xs uppercase tracking-widest">
-                        Sold
-                      </p>
-                      <p className="text-text-primary font-semibold">
-                        {item.price_sold ? `$${item.price_sold}` : "—"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-text-muted text-xs uppercase tracking-widest">
-                        Profit
-                      </p>
-                      <p
-                        className={`font-bold ${profit === null ? "text-text-muted" : parseFloat(profit) >= 0 ? "text-status-sold" : "text-red-400"}`}
-                      >
-                        {profit !== null ? `$${profit}` : "—"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {item.status === "sold" && item.sell_time_days !== null && (
-                    <p className="text-text-muted text-xs">
-                      Sold in{" "}
-                      <span className="text-status-sold font-semibold">
-                        {item.sell_time_days}d
-                      </span>
-                    </p>
-                  )}
-                </div>
-              );
-            })}
+            {items.map((item) => (
+              <ItemCard key={item.id} item={item} actions={menu(item)} />
+            ))}
           </div>
         </div>
       </div>
@@ -302,18 +126,8 @@ function Items() {
             Bulk Add Items
           </Link>
         </div>
+        {modal}
       </div>
-
-      {editingItem && (
-        <EditItemModel
-          item={editingItem}
-          brands={brands}
-          styles={styles}
-          stores={stores}
-          onClose={() => setEditingItem(null)}
-          onSave={handleSave}
-        />
-      )}
     </div>
   );
 }

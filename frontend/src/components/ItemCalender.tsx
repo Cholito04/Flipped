@@ -3,33 +3,10 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../styles/calander.css";
 import api from "../util/axios";
-
-interface Brand {
-  id: number;
-  brand: string;
-}
-interface Style {
-  id: number;
-  style: string;
-}
-interface Store {
-  id: number;
-  store: string;
-}
-
-interface Item {
-  sold_at: string | null;
-  id: number;
-  brand: Brand;
-  style: Style;
-  store: Store;
-  size: string;
-  category: string;
-  status: string;
-  price_bought: string;
-  price_sold: string | null;
-  created_at: string;
-}
+import { useItemActions } from "../util/useItemActions";
+import type { Item } from "../util/Types";
+import ItemCard from "../util/ItemCard";
+import type { ReactNode } from "react";
 
 type ValuePiece = Date | null;
 
@@ -156,10 +133,12 @@ function StoreRow({
   store,
   storeItems,
   mode,
+  menu,
 }: {
   store: string;
   storeItems: Item[];
   mode: "bought" | "sold";
+  menu: (item: Item) => ReactNode;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -170,7 +149,7 @@ function StoreRow({
   const profit = earned - spent;
 
   return (
-    <div className="border border-border rounded-2xl overflow-hidden">
+    <div className="border border-border rounded-2xl">
       {/* clickable bar */}
       <button
         onClick={() => setOpen(!open)}
@@ -179,7 +158,9 @@ function StoreRow({
         <div className="flex items-center gap-4">
           <span
             className={`transition-transform duration-200 text-text-muted text-xs ${open ? "rotate-90" : ""}`}
-          > </span>
+          >
+            {" "}
+          </span>
           <span className="text-text-primary font-semibold text-m">
             {store}
           </span>
@@ -217,76 +198,14 @@ function StoreRow({
       {open && (
         <div className="border-t border-border">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            {storeItems.map((item) => {
-              const itemProfit = item.price_sold
-                ? (
-                    parseFloat(item.price_sold) - parseFloat(item.price_bought)
-                  ).toFixed(2)
-                : null;
-
-              return (
-                <div
-                  key={item.id}
-                  className="bg-bg border border-border rounded-xl p-4 flex flex-col gap-3"
-                >
-                  <div>
-                    <p className="text-text-primary font-semibold">
-                      {item.brand.brand} {item.category}
-                    </p>
-                    <p className="text-text-muted text-xs">
-                      {item.style.style} · {item.size}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border w-fit ${
-                      item.status === "sold"
-                        ? "text-status-sold border-status-sold bg-status-sold/10"
-                        : item.status === "listed"
-                          ? "text-status-listed border-status-listed bg-status-listed/10"
-                          : "text-status-unlisted border-status-unlisted bg-status-unlisted/10"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-
-                  <div className="flex justify-between border-t border-border pt-3">
-                    <div>
-                      <p className="text-text-muted text-xs uppercase tracking-widest">
-                        Bought
-                      </p>
-                      <p className="text-text-primary font-semibold">
-                        ${item.price_bought}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-text-muted text-xs uppercase tracking-widest">
-                        Sold
-                      </p>
-                      <p className="text-text-primary font-semibold">
-                        {item.price_sold ? `$${item.price_sold}` : "—"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-text-muted text-xs uppercase tracking-widest">
-                        Profit
-                      </p>
-                      <p
-                        className={`font-bold ${
-                          itemProfit === null
-                            ? "text-text-muted"
-                            : parseFloat(itemProfit) >= 0
-                              ? "text-status-sold"
-                              : "text-red-400"
-                        }`}
-                      >
-                        {itemProfit !== null ? `$${itemProfit}` : "—"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {storeItems.map((item) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                variant="compact"
+                actions={menu(item)}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -333,6 +252,7 @@ function ItemCalender() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [value, onChange] = useState<Value>(new Date());
+  const { menu, modal } = useItemActions(setItems, setError);
 
   useEffect(() => {
     async function fetchItems() {
@@ -465,6 +385,7 @@ function ItemCalender() {
                           store={store}
                           storeItems={storeItems}
                           mode="bought"
+                          menu={menu}
                         />
                       ),
                     )}
@@ -482,6 +403,7 @@ function ItemCalender() {
                         store={store}
                         storeItems={storeItems}
                         mode="sold"
+                        menu={menu}
                       />
                     ))}
                   </ActivitySection>
@@ -491,6 +413,8 @@ function ItemCalender() {
           </div>
         </div>
       </div>
+      {modal}
+      {error}
     </div>
   );
 }
